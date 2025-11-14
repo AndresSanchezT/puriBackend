@@ -1,5 +1,7 @@
 package com.AndresSanchezDev.SISTEMASPURI.controller;
 
+
+import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.VendedorStatsDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.Vendedor;
 import com.AndresSanchezDev.SISTEMASPURI.service.VendedorService;
 import org.springframework.web.bind.annotation.*;
@@ -42,4 +44,10 @@ public class VendedorController {
     public void delete(@PathVariable Long id) {
         vendedorService.deleteById(id);
     }
+
+    @GetMapping("/estadisticas")
+    public List<VendedorStatsDTO> getEstadisticas() {
+        return vendedorService.obtenerEstadisticasVendedores();
+    }
+
 }

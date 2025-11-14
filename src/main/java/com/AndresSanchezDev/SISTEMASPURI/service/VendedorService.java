@@ -1,5 +1,6 @@
 package com.AndresSanchezDev.SISTEMASPURI.service;
 
+import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.VendedorStatsDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.Vendedor;
 
 import java.util.List;
@@ -10,4 +11,5 @@ public interface VendedorService {
     Optional<Vendedor> findById(Long id);
     Vendedor save(Vendedor vendedor);
     void deleteById(Long id);
+    List<VendedorStatsDTO> obtenerEstadisticasVendedores();
 }

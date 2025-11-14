@@ -1,6 +1,11 @@
 package com.AndresSanchezDev.SISTEMASPURI.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Usuario {
@@ -8,24 +13,42 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nombre;
-    private String apellido;
     private String correo;
-    private String telefono;
     private String contrasena;
+    private String telefono;
+    private LocalDate fechaCreacion;
+    private LocalDate fechaActualizacion;
     @Enumerated(EnumType.STRING)
     private Rol rol;
+    @OneToMany(mappedBy = "vendedor")
+    @JsonIgnore
+    private List<Visita> visitas = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "vendedor")
+    private List<Pedido> pedidos = new ArrayList<>();
 
     public Usuario() {
     }
 
-    public Usuario(Long id, String nombre, String apellido, String correo, String telefono, String contrasena, Rol rol) {
+    public Usuario(Long id, String nombre, String correo, String telefono, String contrasena, LocalDate fechaCreacion, LocalDate fechaActualizacion, Rol rol, List<Visita> visitas, List<Pedido> pedidos) {
         this.id = id;
         this.nombre = nombre;
-        this.apellido = apellido;
         this.correo = correo;
         this.telefono = telefono;
         this.contrasena = contrasena;
+        this.fechaCreacion = fechaCreacion;
+        this.fechaActualizacion = fechaActualizacion;
         this.rol = rol;
+        this.visitas = visitas;
+        this.pedidos = pedidos;
+    }
+
+    public List<Visita> getVisitas() {
+        return visitas;
+    }
+
+    public void setVisitas(List<Visita> visitas) {
+        this.visitas = visitas;
     }
 
     public Long getId() {
@@ -42,14 +65,6 @@ public class Usuario {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-
-    public String getApellido() {
-        return apellido;
-    }
-
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
     }
 
     public String getCorreo() {
@@ -76,11 +91,35 @@ public class Usuario {
         this.contrasena = contrasena;
     }
 
+    public LocalDate getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDate fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public LocalDate getFechaActualizacion() {
+        return fechaActualizacion;
+    }
+
+    public void setFechaActualizacion(LocalDate fechaActualizacion) {
+        this.fechaActualizacion = fechaActualizacion;
+    }
+
     public Rol getRol() {
         return rol;
     }
 
     public void setRol(Rol rol) {
         this.rol = rol;
+    }
+
+    public List<Pedido> getPedidos() {
+        return pedidos;
+    }
+
+    public void setPedidos(List<Pedido> pedidos) {
+        this.pedidos = pedidos;
     }
 }

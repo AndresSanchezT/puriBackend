@@ -1,5 +1,6 @@
 package com.AndresSanchezDev.SISTEMASPURI.service;
 
+import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.VendedorStatsDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.Vendedor;
 import com.AndresSanchezDev.SISTEMASPURI.repository.VendedorRepository;
 import org.springframework.stereotype.Service;
@@ -34,5 +35,10 @@ public class VendedorServiceImpl implements VendedorService {
     @Override
     public void deleteById(Long id) {
         vendedorRepository.deleteById(id);
+    }
+
+    @Override
+    public List<VendedorStatsDTO> obtenerEstadisticasVendedores() {
+        return vendedorRepository.obtenerEstadisticasVendedores();
     }
 }

@@ -2,6 +2,9 @@ package com.AndresSanchezDev.SISTEMASPURI.controller;
 
 import com.AndresSanchezDev.SISTEMASPURI.entity.Producto;
 import com.AndresSanchezDev.SISTEMASPURI.service.ProductoService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
@@ -16,10 +19,25 @@ public class ProductoController {
         this.productoService = productoService;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public List<Producto> getAll() {
         return productoService.findAll();
     }
+
+    @GetMapping
+    public Page<Producto> getAll(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "9") int limit,
+            @RequestParam(defaultValue = "") String tipo
+    ) {
+        Pageable pageable = PageRequest.of(offset, limit);
+        if (!tipo.isEmpty()) {
+            return productoService.findByTipo(tipo, pageable);
+        } else {
+            return productoService.findAll(pageable);
+        }
+    }
+
 
     @GetMapping("/{id}")
     public Optional<Producto> getById(@PathVariable Long id) {
