@@ -26,6 +26,10 @@ public class ClienteController {
         return clienteService.findById(id);
     }
 
+    @GetMapping("/total")
+    public Long getCountTotalClientes(){
+        return clienteService.countTotalClientes();
+    }
     @PostMapping
     public Cliente create(@RequestBody Cliente cliente) {
         return clienteService.save(cliente);

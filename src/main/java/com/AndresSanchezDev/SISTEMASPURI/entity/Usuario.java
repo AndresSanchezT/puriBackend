@@ -7,25 +7,25 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-public class Usuario {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String nombre;
-    private String correo;
-    private String contrasena;
-    private String telefono;
-    private LocalDate fechaCreacion;
-    private LocalDate fechaActualizacion;
-    @Enumerated(EnumType.STRING)
-    private Rol rol;
-    @OneToMany(mappedBy = "vendedor")
-    @JsonIgnore
-    private List<Visita> visitas = new ArrayList<>();
-    @JsonIgnore
-    @OneToMany(mappedBy = "vendedor")
-    private List<Pedido> pedidos = new ArrayList<>();
+    @Entity
+    public class Usuario {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+        private String nombre;
+        private String correo;
+        private String contrasena;
+        private String telefono;
+        private LocalDate fechaCreacion;
+        private LocalDate fechaActualizacion;
+        @Enumerated(EnumType.STRING)
+        private Rol rol;
+        @OneToMany(mappedBy = "vendedor")
+        @JsonIgnore
+        private List<Visita> visitas = new ArrayList<>();
+        @JsonIgnore
+        @OneToMany(mappedBy = "vendedor")
+        private List<Pedido> pedidos = new ArrayList<>();
 
     public Usuario() {
     }

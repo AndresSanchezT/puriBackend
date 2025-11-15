@@ -1,9 +1,11 @@
 package com.AndresSanchezDev.SISTEMASPURI.entity.DTO;
 
-public record VendedorStatsDTO(
-        Long idUsuario,
-        String nombreCompleto,
-        int totalPedidos,
-        Double montoTotalVendido,
-        int totalVisitas
-) {}
+import java.math.BigDecimal;
+
+public interface VendedorStatsDTO {
+    Long getIdUsuario();
+    String getNombreCompleto();
+    Long getTotalPedidos();
+    Double getMontoTotalVendido();
+    Long getTotalVisitas();
+}

@@ -35,4 +35,9 @@ public class ClienteServiceImpl implements ClienteService {
     public void deleteById(Long id) {
         clienteRepository.deleteById(id);
     }
+
+    @Override
+    public long countTotalClientes() {
+        return clienteRepository.count();
+    }
 }

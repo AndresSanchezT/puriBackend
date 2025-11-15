@@ -47,6 +47,16 @@ public class PedidoServiceImpl implements PedidoService {
         pedidoRepository.deleteById(id);
     }
 
+    @Override
+    public List<Pedido> pedidosHoy(){
+        return pedidoRepository.pedidosHoy();
+    }
+
+    @Override
+    public long countPedidosTotales() {
+        return pedidoRepository.count();
+    }
+
     /**
      * Registra un nuevo pedido creando automáticamente una visita
      * y asociando cliente, vendedor y la visita creada.

@@ -47,4 +47,9 @@ public class ProductoServiceImpl implements ProductoService {
     public void deleteById(Long id) {
         productoRepository.deleteById(id);
     }
+
+    @Override
+    public long countProductosStockBajo() {
+        return productoRepository.countProductosStockBajo();
+    }
 }

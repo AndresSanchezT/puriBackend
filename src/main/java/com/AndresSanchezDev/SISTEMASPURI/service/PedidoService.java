@@ -12,4 +12,6 @@ public interface PedidoService {
     Optional<Pedido> findById(Long id);
     Pedido save(Pedido pedido);
     void deleteById(Long id);
+    List<Pedido> pedidosHoy();
+    long countPedidosTotales();
 }

@@ -38,6 +38,10 @@ public class ProductoController {
         }
     }
 
+    @GetMapping("/stockBajos")
+    public long countProductosStockBajo() {
+        return productoService.countProductosStockBajo();
+    }
 
     @GetMapping("/{id}")
     public Optional<Producto> getById(@PathVariable Long id) {

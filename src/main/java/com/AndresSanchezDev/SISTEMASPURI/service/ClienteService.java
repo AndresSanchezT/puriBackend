@@ -10,4 +10,5 @@ public interface ClienteService {
     Optional<Cliente> findById(Long id);
     Cliente save(Cliente cliente);
     void deleteById(Long id);
+    long countTotalClientes();
 }

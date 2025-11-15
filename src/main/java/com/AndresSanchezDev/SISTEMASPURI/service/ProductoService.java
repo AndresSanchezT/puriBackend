@@ -14,4 +14,5 @@ public interface ProductoService {
     Optional<Producto> findById(Long id);
     Producto save(Producto producto);
     void deleteById(Long id);
+    long countProductosStockBajo();
 }

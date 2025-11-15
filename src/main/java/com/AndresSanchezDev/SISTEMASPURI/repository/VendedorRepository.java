@@ -12,18 +12,36 @@ import java.util.List;
 public interface VendedorRepository extends JpaRepository<Vendedor, Long> {
 
     @Query(value = """
-        SELECT 
-          u.id AS idUsuario,
-          u.nombre AS nombreCompleto,
-          COUNT(DISTINCT p.id) AS totalPedidos,
-          COALESCE(SUM(p.total), 0) AS montoTotalVendido,
-          COUNT(DISTINCT v.id) AS totalVisitas
-        FROM usuario u
-        LEFT JOIN pedido p ON u.id = p.id_vendedor
-        LEFT JOIN visita v ON u.id = v.id_vendedor
-        WHERE u.rol = 'vendedor'
-        GROUP BY u.id, u.nombre
-        ORDER BY montoTotalVendido DESC
-        """, nativeQuery = true)
+    SELECT
+        u.id AS idUsuario,
+        u.nombre AS nombreCompleto,
+
+        -- TOTAL DE PEDIDOS
+        (
+            SELECT COUNT(*)
+            FROM pedido p
+            WHERE p.id_vendedor = u.id
+        ) AS totalPedidos,
+
+        -- MONTO TOTAL VENDIDO (dos decimales, sin duplicados)
+        (
+            SELECT ROUND(COALESCE(SUM(p.total), 0), 2)
+            FROM pedido p
+            WHERE p.id_vendedor = u.id
+        ) AS montoTotalVendido,
+
+        -- TOTAL DE VISITAS
+        (
+            SELECT COUNT(*)
+            FROM visita v
+            WHERE v.id_vendedor = u.id
+        ) AS totalVisitas
+
+    FROM usuario u
+    GROUP BY u.id, u.nombre
+    ORDER BY montoTotalVendido DESC
+    """,
+            nativeQuery = true)
     List<VendedorStatsDTO> obtenerEstadisticasVendedores();
+
 }

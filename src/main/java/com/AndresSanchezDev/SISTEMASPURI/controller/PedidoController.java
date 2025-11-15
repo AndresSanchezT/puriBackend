@@ -27,6 +27,15 @@ public class PedidoController {
     public Optional<Pedido> getById(@PathVariable Long id) {
         return service.findById(id);
     }
+    @GetMapping("/hoy")
+    public List<Pedido> countPedidosHoy() {
+        return service.pedidosHoy();
+    }
+
+    @GetMapping("/total")
+    public long countPedidosTotales(){
+        return service.countPedidosTotales();
+    }
 
     @PostMapping
     public Pedido create(@RequestBody Pedido pedido) {
