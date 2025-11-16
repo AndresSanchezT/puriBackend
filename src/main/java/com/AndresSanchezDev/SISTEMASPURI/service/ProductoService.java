@@ -15,4 +15,5 @@ public interface ProductoService {
     Producto save(Producto producto);
     void deleteById(Long id);
     long countProductosStockBajo();
+    void disminuirStock(Long productoId, int cantidad);
 }

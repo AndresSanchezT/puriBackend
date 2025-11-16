@@ -1,9 +1,8 @@
 package com.AndresSanchezDev.SISTEMASPURI.controller;
 
 import com.AndresSanchezDev.SISTEMASPURI.entity.Boleta;
-import com.AndresSanchezDev.SISTEMASPURI.entity.Pedido;
+import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ActualizarEstadoBoletaDTO;
 import com.AndresSanchezDev.SISTEMASPURI.service.BoletaService;
-import com.AndresSanchezDev.SISTEMASPURI.service.PedidoService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,6 +37,14 @@ public class BoletaController {
     public Boleta update(@PathVariable Long id, @RequestBody Boleta boleta) {
         boleta.setId(id);
         return service.save(boleta);
+    }
+
+    @PutMapping("/{id}/estado")
+    public String actualizarEstadoBoleta(
+            @PathVariable Long id,
+            @RequestBody ActualizarEstadoBoletaDTO dto
+    ) {
+        return service.actualizarEstado(id, dto);
     }
 
     @DeleteMapping("/{id}")

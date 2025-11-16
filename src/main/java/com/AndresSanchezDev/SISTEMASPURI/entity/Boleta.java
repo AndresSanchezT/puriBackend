@@ -2,7 +2,8 @@ package com.AndresSanchezDev.SISTEMASPURI.entity;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Entity
 public class Boleta {
     @Id
@@ -13,23 +14,23 @@ public class Boleta {
     @OneToOne
     private Pedido pedido;
     @ManyToOne
-    private Vendedor vendedor;
+    private Usuario vendedor;
     @ManyToOne
     private Cliente cliente;
-    private LocalDate fechaEmision;
+    private LocalDateTime fechaEmision;
     private Double subtotal;
     private Double igv;
     private Double total;
     private String estado;
     private String motivoAnulacion;
-    private LocalDate fechaAnulacion;
+    private LocalDateTime fechaAnulacion;
     private int idAuxiliar;
-    private LocalDate fechaRegistro;
+    private LocalDateTime fechaRegistro;
 
     public Boleta() {
     }
 
-    public Boleta(LocalDate fechaEmision, Long id, String codigo, Pedido pedido, Vendedor vendedor, Cliente cliente, Double subtotal, Double igv, Double total, String estado, String motivoAnulacion, LocalDate fechaAnulacion, int idAuxiliar, LocalDate fechaRegistro) {
+    public Boleta(LocalDateTime fechaEmision, Long id, String codigo, Pedido pedido, Usuario vendedor, Cliente cliente, Double subtotal, Double igv, Double total, String estado, String motivoAnulacion, LocalDateTime fechaAnulacion, int idAuxiliar, LocalDateTime fechaRegistro) {
         this.fechaEmision = fechaEmision;
         this.id = id;
         this.codigo = codigo;
@@ -70,11 +71,11 @@ public class Boleta {
         this.pedido = pedido;
     }
 
-    public Vendedor getVendedor() {
+    public Usuario getVendedor() {
         return vendedor;
     }
 
-    public void setVendedor(Vendedor vendedor) {
+    public void setVendedor(Usuario vendedor) {
         this.vendedor = vendedor;
     }
 
@@ -86,11 +87,11 @@ public class Boleta {
         this.cliente = cliente;
     }
 
-    public LocalDate getFechaEmision() {
+    public LocalDateTime getFechaEmision() {
         return fechaEmision;
     }
 
-    public void setFechaEmision(LocalDate fechaEmision) {
+    public void setFechaEmision(LocalDateTime fechaEmision) {
         this.fechaEmision = fechaEmision;
     }
 
@@ -134,11 +135,11 @@ public class Boleta {
         this.motivoAnulacion = motivoAnulacion;
     }
 
-    public LocalDate getFechaAnulacion() {
+    public LocalDateTime getFechaAnulacion() {
         return fechaAnulacion;
     }
 
-    public void setFechaAnulacion(LocalDate fechaAnulacion) {
+    public void setFechaAnulacion(LocalDateTime fechaAnulacion) {
         this.fechaAnulacion = fechaAnulacion;
     }
 
@@ -150,11 +151,11 @@ public class Boleta {
         this.idAuxiliar = idAuxiliar;
     }
 
-    public LocalDate getFechaRegistro() {
+    public LocalDateTime getFechaRegistro() {
         return fechaRegistro;
     }
 
-    public void setFechaRegistro(LocalDate fechaRegistro) {
+    public void setFechaRegistro(LocalDateTime fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
     }
 }

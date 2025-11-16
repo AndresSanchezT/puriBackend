@@ -49,7 +49,7 @@ public class DetallePedido {
     }
 
     public Double getSubtotal() {
-        return subtotal;
+        return this.cantidad * this.precioUnitario;
     }
 
     public void setSubtotal(Double subtotal) {

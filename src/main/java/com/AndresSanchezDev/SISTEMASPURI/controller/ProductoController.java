@@ -43,6 +43,16 @@ public class ProductoController {
         return productoService.countProductosStockBajo();
     }
 
+    @PostMapping("/comprar")
+    public String comprarProducto(@RequestParam Long productoId, @RequestParam int cantidad) {
+        try {
+            productoService.disminuirStock(productoId, cantidad);
+            return "Compra realizada, stock actualizado";
+        } catch (RuntimeException e) {
+            return "error";
+        }
+    }
+
     @GetMapping("/{id}")
     public Optional<Producto> getById(@PathVariable Long id) {
         return productoService.findById(id);

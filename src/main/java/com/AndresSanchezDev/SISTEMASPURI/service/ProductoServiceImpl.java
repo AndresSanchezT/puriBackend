@@ -5,6 +5,7 @@ import com.AndresSanchezDev.SISTEMASPURI.repository.ProductoRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -51,5 +52,19 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     public long countProductosStockBajo() {
         return productoRepository.countProductosStockBajo();
+    }
+
+    @Transactional
+    @Override
+    public void disminuirStock(Long productoId, int cantidad) {
+        Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        if (producto.getStockActual() < cantidad) {
+            throw new RuntimeException("No hay suficiente stock disponible");
+        }
+
+        producto.setStockActual(producto.getStockActual() - cantidad);
+        productoRepository.save(producto);
     }
 }
