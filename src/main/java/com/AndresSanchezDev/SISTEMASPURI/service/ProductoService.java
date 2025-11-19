@@ -1,6 +1,7 @@
 package com.AndresSanchezDev.SISTEMASPURI.service;
 
 import com.AndresSanchezDev.SISTEMASPURI.entity.Producto;
+import com.AndresSanchezDev.SISTEMASPURI.entity.ProductoFaltante;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,5 +16,6 @@ public interface ProductoService {
     Producto save(Producto producto);
     void deleteById(Long id);
     long countProductosStockBajo();
-    void disminuirStock(Long productoId, int cantidad);
+    List<ProductoFaltante> listarFaltantes();
+    void deleteAllProductosFaltantes();
 }

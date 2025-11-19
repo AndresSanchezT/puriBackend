@@ -1,11 +1,13 @@
 package com.AndresSanchezDev.SISTEMASPURI.service;
 
 import com.AndresSanchezDev.SISTEMASPURI.entity.Producto;
+import com.AndresSanchezDev.SISTEMASPURI.entity.ProductoFaltante;
+import com.AndresSanchezDev.SISTEMASPURI.repository.ProductoFaltanteRepository;
 import com.AndresSanchezDev.SISTEMASPURI.repository.ProductoRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -14,9 +16,11 @@ import java.util.Optional;
 public class ProductoServiceImpl implements ProductoService {
 
     private final ProductoRepository productoRepository;
+    private final ProductoFaltanteRepository productoFaltanteRepository;
 
-    public ProductoServiceImpl(ProductoRepository productoRepository) {
+    public ProductoServiceImpl(ProductoRepository productoRepository,ProductoFaltanteRepository productoFaltanteRepository) {
         this.productoRepository = productoRepository;
+        this.productoFaltanteRepository = productoFaltanteRepository;
     }
 
     @Override
@@ -54,17 +58,14 @@ public class ProductoServiceImpl implements ProductoService {
         return productoRepository.countProductosStockBajo();
     }
 
-    @Transactional
     @Override
-    public void disminuirStock(Long productoId, int cantidad) {
-        Producto producto = productoRepository.findById(productoId)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-
-        if (producto.getStockActual() < cantidad) {
-            throw new RuntimeException("No hay suficiente stock disponible");
-        }
-
-        producto.setStockActual(producto.getStockActual() - cantidad);
-        productoRepository.save(producto);
+    public List<ProductoFaltante> listarFaltantes() {
+        return productoFaltanteRepository.findAll();
     }
+
+    @Override
+    public void deleteAllProductosFaltantes() {
+        productoFaltanteRepository.deleteAll();
+    }
+
 }

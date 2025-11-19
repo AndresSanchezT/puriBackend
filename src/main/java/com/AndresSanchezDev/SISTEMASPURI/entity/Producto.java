@@ -17,6 +17,7 @@ public class Producto {
     private Double precio;
     private int stockActual;
     private int stockMinimo;
+    private int cantidadFaltante;
     private String unidadMedida;
     private String estado;
     private String tipo;
@@ -30,13 +31,14 @@ public class Producto {
     public Producto() {
     }
 
-    public Producto(Long id, String codigo, String nombre, Double precio, int stockActual, int stockMinimo, String unidadMedida, String estado, String tipo, String descripcion, LocalDate fechaCreacion, LocalDate fechaActualizacion) {
+    public Producto(Long id, String codigo, String nombre, Double precio, int stockActual, int stockMinimo,int cantidadFaltante, String unidadMedida, String estado, String tipo, String descripcion, LocalDate fechaCreacion, LocalDate fechaActualizacion) {
         this.id = id;
         this.codigo = codigo;
         this.nombre = nombre;
         this.precio = precio;
         this.stockActual = stockActual;
         this.stockMinimo = stockMinimo;
+        this.cantidadFaltante= cantidadFaltante;
         this.unidadMedida = unidadMedida;
         this.estado = estado;
         this.tipo = tipo;
@@ -93,6 +95,12 @@ public class Producto {
         this.stockMinimo = stockMinimo;
     }
 
+    public int getCantidadFaltante() {
+        return cantidadFaltante;
+    }
+    public void setCantidadFaltante(int cantidadFaltante) {
+        this.cantidadFaltante = cantidadFaltante;
+    }
     public String getUnidadMedida() {
         return unidadMedida;
     }

@@ -1,16 +1,19 @@
 package com.AndresSanchezDev.SISTEMASPURI.controller;
 
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ItemPedidoDTO;
-import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.PedidoValidacionDTO;
+
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ReporteProductoDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.Pedido;
+
+import com.AndresSanchezDev.SISTEMASPURI.entity.ProductoFaltante;
 import com.AndresSanchezDev.SISTEMASPURI.service.PedidoService;
+import com.AndresSanchezDev.SISTEMASPURI.service.ProductoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
+
 import java.util.List;
-import java.util.Map;
+
 import java.util.Optional;
 
 @RestController
@@ -18,9 +21,11 @@ import java.util.Optional;
 public class PedidoController {
 
     private final PedidoService service;
+    private final ProductoService productoService;
 
-    public PedidoController(PedidoService service) {
+    public PedidoController(PedidoService service, ProductoService productoService) {
         this.service = service;
+        this.productoService = productoService;
     }
 
     @GetMapping
@@ -48,6 +53,11 @@ public class PedidoController {
         return service.reporteProductosRegistrados();
     }
 
+    @GetMapping("/faltantes")
+    public List<ProductoFaltante> listarFaltantes() {
+        return productoService.listarFaltantes();
+    }
+
     @PostMapping
     public Pedido create(@RequestBody Pedido pedido) {
         return service.save(pedido);
@@ -67,10 +77,11 @@ public class PedidoController {
     }
 
     @PostMapping("/validar-pedido")
-    public ResponseEntity<List<ItemPedidoDTO>> validarPedido(@RequestBody PedidoValidacionDTO data) {
-        List<ItemPedidoDTO> faltantes = service.validarStock(data.getItems());
+    public ResponseEntity<List<ItemPedidoDTO>> validarPedido(@RequestBody List<ItemPedidoDTO> data) {
+        List<ItemPedidoDTO> faltantes = service.validarStock(data);
         return ResponseEntity.ok(faltantes);
     }
+
     @PutMapping("/{id}")
     public Pedido update(@PathVariable Long id, @RequestBody Pedido pedido) {
         pedido.setId(id);
@@ -80,5 +91,10 @@ public class PedidoController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         service.deleteById(id);
+    }
+
+    @DeleteMapping("/resetear-faltantes")
+    public void resetearProductosFaltantes(){
+        this.productoService.deleteAllProductosFaltantes();
     }
 }

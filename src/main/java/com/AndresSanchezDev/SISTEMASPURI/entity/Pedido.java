@@ -3,7 +3,7 @@ package com.AndresSanchezDev.SISTEMASPURI.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -19,7 +19,7 @@ public class Pedido {
     private Cliente cliente;
     @OneToOne
     private Visita visita;
-    private LocalDate fechaPedido;
+    private LocalDateTime fechaPedido;
     private Double subtotal;
     private Double igv;
     private Double total;
@@ -31,7 +31,7 @@ public class Pedido {
 
     public Pedido() {}
 
-    public Pedido(Long id, Usuario vendedor, Cliente cliente, Visita visita, LocalDate fechaPedido, Double subtotal, Double igv, Double total, String estado, String observaciones, List<DetallePedido> detallePedidos) {
+    public Pedido(Long id, Usuario vendedor, Cliente cliente, Visita visita, LocalDateTime fechaPedido, Double subtotal, Double igv, Double total, String estado, String observaciones, List<DetallePedido> detallePedidos) {
         this.id = id;
         this.vendedor = vendedor;
         this.cliente = cliente;
@@ -77,11 +77,11 @@ public class Pedido {
         this.visita = visita;
     }
 
-    public LocalDate getFechaPedido() {
+    public LocalDateTime getFechaPedido() {
         return fechaPedido;
     }
 
-    public void setFechaPedido(LocalDate fechaPedido) {
+    public void setFechaPedido(LocalDateTime fechaPedido) {
         this.fechaPedido = fechaPedido;
     }
 

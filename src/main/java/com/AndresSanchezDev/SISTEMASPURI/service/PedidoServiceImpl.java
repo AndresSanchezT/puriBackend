@@ -8,11 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PedidoServiceImpl implements PedidoService {
@@ -28,11 +29,15 @@ public class PedidoServiceImpl implements PedidoService {
     private BoletaRepository boletaRepository;
     @Autowired
     private ProductoRepository productoRepository;
+    @Autowired
+    private ProductoFaltanteRepository productoFaltanteRepository;
 
     @Transactional
     @Override
-    public Pedido registrarPedidoConVisitaYDetalles(Long idCliente, Long idVendedor, Pedido pedidoData, boolean forzarGuardar) {
-        // 1. Validar stock antes de guardar
+    public Pedido registrarPedidoConVisitaYDetalles(Long idCliente, Long idVendedor,
+                                                    Pedido pedidoData, boolean forzarGuardar) {
+
+        // 1. Validar stock antes de guardar (NO toca DB)
         List<ItemPedidoDTO> items = pedidoData.getDetallePedidos()
                 .stream()
                 .map(d -> new ItemPedidoDTO(d.getProducto().getId(), d.getCantidad()))
@@ -42,12 +47,13 @@ public class PedidoServiceImpl implements PedidoService {
 
         if (!faltantes.isEmpty() && !forzarGuardar) {
             throw new RuntimeException("Falta stock para: " +
-                    faltantes.stream().map(ItemPedidoDTO::getProductoId).toList());
+                    faltantes.stream().map(ItemPedidoDTO::getNombre).toList());
         }
 
         // 2. Buscar cliente y vendedor
         Cliente cliente = clienteRepository.findById(idCliente)
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
         Usuario vendedor = usuarioRepository.findById(idVendedor)
                 .orElseThrow(() -> new RuntimeException("Vendedor no encontrado"));
 
@@ -55,7 +61,7 @@ public class PedidoServiceImpl implements PedidoService {
         Visita visita = new Visita();
         visita.setCliente(cliente);
         visita.setVendedor(vendedor);
-        visita.setFecha(LocalDate.now());
+        visita.setFecha(LocalDateTime.now());
         visita.setEstado("Pendiente");
         visita.setObservaciones("Sin observaciones");
         visitaRepository.save(visita);
@@ -64,7 +70,7 @@ public class PedidoServiceImpl implements PedidoService {
         pedidoData.setCliente(cliente);
         pedidoData.setVendedor(vendedor);
         pedidoData.setVisita(visita);
-        pedidoData.setFechaPedido(LocalDate.now());
+        pedidoData.setFechaPedido(LocalDateTime.now());
         pedidoData.setEstado("registrado");
 
         double subtotal = pedidoData.getDetallePedidos().stream()
@@ -72,8 +78,8 @@ public class PedidoServiceImpl implements PedidoService {
                 .sum();
 
         pedidoData.setSubtotal(subtotal);
-        pedidoData.setIgv(subtotal * 0.18);
-        pedidoData.setTotal(subtotal * 1.18);
+        pedidoData.setIgv(0.0);
+        pedidoData.setTotal(subtotal + pedidoData.getIgv());
 
         pedidoData.getDetallePedidos().forEach(det -> det.setPedido(pedidoData));
 
@@ -93,18 +99,15 @@ public class PedidoServiceImpl implements PedidoService {
         boleta.setFechaRegistro(LocalDateTime.now());
         boletaRepository.save(boleta);
 
-        // 6. ACTUALIZAR STOCK (solo si NO faltó stock o si se forzó)
+        // 6. ACTUALIZAR STOCK (solo si no faltó stock o si se fuerza)
         if (faltantes.isEmpty() || forzarGuardar) {
             for (DetallePedido det : pedidoData.getDetallePedidos()) {
-                Producto producto = det.getProducto();
-                int nuevoStock = producto.getStockActual() - det.getCantidad();
-                producto.setStockActual(Math.max(nuevoStock, 0));
-                productoRepository.save(producto);
+                Producto p = det.getProducto();
+                int nuevoStock = p.getStockActual() - det.getCantidad();
+                p.setStockActual(Math.max(nuevoStock, 0));
+                productoRepository.save(p);
             }
         }
-
-        // Opcional: guardar faltantes en una tabla
-        // faltanteProductoService.guardarFaltantes(pedidoGuardado, faltantes);
 
         return pedidoGuardado;
     }
@@ -130,7 +133,7 @@ public class PedidoServiceImpl implements PedidoService {
     }
 
     @Override
-    public List<Pedido> pedidosHoy(){
+    public List<Pedido> pedidosHoy() {
         return pedidoRepository.pedidosHoy();
     }
 
@@ -143,23 +146,60 @@ public class PedidoServiceImpl implements PedidoService {
     public List<ReporteProductoDTO> reporteProductosRegistrados() {
         return pedidoRepository.reporteProductosRegistrados();
     }
-
     @Override
     public List<ItemPedidoDTO> validarStock(List<ItemPedidoDTO> items) {
-        List<ItemPedidoDTO> productosConFaltante = new ArrayList<>();
+
+        // Obtener ids únicos
+        List<Long> ids = items.stream()
+                .map(ItemPedidoDTO::getProductoId)
+                .distinct()
+                .toList();
+
+        // Traer productos existentes
+        Map<Long, Producto> map = productoRepository.findAllById(ids)
+                .stream()
+                .collect(Collectors.toMap(
+                        Producto::getId,
+                        p -> p,
+                        (a, b) -> a
+                ));
+
+        List<ItemPedidoDTO> faltantes = new ArrayList<>();
 
         for (ItemPedidoDTO item : items) {
-            Producto producto = productoRepository.findById(item.getProductoId())
-                    .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + item.getProductoId()));
 
-            item.setStockActual(producto.getStockActual());
-            item.setCantidadFaltante(Math.max(0, item.getCantidadSolicitada() - producto.getStockActual()));
+            Producto p = map.get(item.getProductoId());
 
-            if (item.getCantidadFaltante() > 0) {
-                productosConFaltante.add(item);
+            if (p == null) {
+                throw new RuntimeException("Producto no encontrado: " + item.getProductoId());
+            }
+
+            int faltante = Math.max(0, item.getCantidadSolicitada() - p.getStockActual());
+
+            if (faltante > 0) {
+                ItemPedidoDTO dto = new ItemPedidoDTO(
+                        p.getId(),
+                        p.getNombre(),
+                        p.getStockActual(),
+                        item.getCantidadSolicitada(),
+                        faltante
+                );
+
+                faltantes.add(dto);
+
+                // 🔥 Guardar faltante en BD
+                ProductoFaltante pf = new ProductoFaltante();
+                pf.setProductoId(p.getId());
+                pf.setNombreProducto(p.getNombre());
+                pf.setStockActual(p.getStockActual());
+                pf.setCantidadSolicitada(item.getCantidadSolicitada());
+                pf.setCantidadFaltante(faltante);
+
+                productoFaltanteRepository.save(pf);
             }
         }
-        return productosConFaltante;
+
+        return faltantes;
     }
 
     // ----------------------------------------------------------

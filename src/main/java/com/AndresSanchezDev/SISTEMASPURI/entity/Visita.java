@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class Visita {
@@ -17,14 +18,14 @@ public class Visita {
     @ManyToOne
     @JoinColumn(name = "id_cliente")
     private Cliente cliente;
-    private LocalDate fecha;
+    private LocalDateTime fecha;
     private String estado;
     private String observaciones;
 
     public Visita() {
     }
 
-    public Visita(Long id, Usuario vendedor, Cliente cliente, LocalDate fecha, String estado, String observaciones) {
+    public Visita(Long id, Usuario vendedor, Cliente cliente, LocalDateTime fecha, String estado, String observaciones) {
         this.id = id;
         this.vendedor = vendedor;
         this.cliente = cliente;
@@ -57,11 +58,11 @@ public class Visita {
         this.cliente = cliente;
     }
 
-    public LocalDate getFecha() {
+    public LocalDateTime getFecha() {
         return fecha;
     }
 
-    public void setFecha(LocalDate fecha) {
+    public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
     }
 

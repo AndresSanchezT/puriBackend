@@ -3,6 +3,7 @@ package com.AndresSanchezDev.SISTEMASPURI.service;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ItemPedidoDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ReporteProductoDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.Pedido;
+import com.AndresSanchezDev.SISTEMASPURI.entity.Producto;
 
 import java.util.List;
 import java.util.Optional;
