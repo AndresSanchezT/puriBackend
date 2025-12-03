@@ -3,6 +3,7 @@ package com.AndresSanchezDev.SISTEMASPURI.service;
 import com.AndresSanchezDev.SISTEMASPURI.entity.*;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.DetalleListaPedidoDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ItemPedidoDTO;
+import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.PedidoResponseDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ReporteProductoDTO;
 import com.AndresSanchezDev.SISTEMASPURI.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,13 +75,13 @@ public class PedidoServiceImpl implements PedidoService {
         pedidoData.setFechaPedido(LocalDateTime.now());
         pedidoData.setEstado("registrado");
 
-        double subtotal = pedidoData.getDetallePedidos().stream()
-                .mapToDouble(DetallePedido::getSubtotal)
-                .sum();
+//        double subtotal = pedidoData.getDetallePedidos().stream()
+//                .mapToDouble(DetallePedido::getSubtotal)
+//                .sum();
 
-        pedidoData.setSubtotal(subtotal);
+//        pedidoData.setSubtotal(subtotal);
         pedidoData.setIgv(0.0);
-        pedidoData.setTotal(subtotal + pedidoData.getIgv());
+//        pedidoData.setTotal(subtotal + pedidoData.getIgv());
 
         pedidoData.getDetallePedidos().forEach(det -> det.setPedido(pedidoData));
 
@@ -210,8 +211,8 @@ public class PedidoServiceImpl implements PedidoService {
     }
 
     @Override
-    public Optional<Pedido> obtenerPedidoCompleto(Long id) {
-        return pedidoRepository.obtenerPedidoCompleto(id);
+    public Optional<PedidoResponseDTO.PedidoDTO> obtenerPedidoCompleto(Long idPedido) {
+            return pedidoRepository.obtenerDetallesPedidoCompletoPorId(idPedido);
     }
 
     // ----------------------------------------------------------

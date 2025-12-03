@@ -1,15 +1,16 @@
 package com.AndresSanchezDev.SISTEMASPURI.repository;
 
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.DetalleListaPedidoDTO;
+import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.PedidoResponseDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ReporteProductoDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.Pedido;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
+
 
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
@@ -36,27 +37,6 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 """, nativeQuery = true)
     List<ReporteProductoDTO> reporteProductosRegistrados();
 
-    @Query(value = """
-    SELECT c.nombre_cliente,
-            c.direccion,
-            c.referencia,
-            c.telefono,
-            v.observaciones,
-            u.nombre_usuario,
-            
-        
-    FROM pedido p
-        INNER JOIN visita v ON p.id_visita = v.id
-    INNER JOIN usuario u ON p.id_vendedor = u.id
-    INNER JOIN cliente c ON p.id_cliente = c.id   
-    INNER JOIN detalle_pedido dp ON p.id = dp.id_pedido
-    INNER JOIN producto pr ON dp.id_producto = pr.id
-    WHERE p.estado = 'registrado'
-    GROUP BY pr.id, pr.nombre, pr.stock_actual, pr.stock_minimo
-    ORDER BY pr.nombre ASC
-""", nativeQuery = true)
-    Optional<Pedido> obtenerPedidoCompleto(@Param("id") Long id);
-
 
     @Query("""
     SELECT 
@@ -69,4 +49,14 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     JOIN p.cliente c
 """)
     List<DetalleListaPedidoDTO> listarPedidosMinimos();
+
+
+    @Query("SELECT DISTINCT p FROM Pedido p " +
+            "LEFT JOIN FETCH p.cliente " +
+            "LEFT JOIN FETCH p.vendedor " +
+            "LEFT JOIN FETCH p.visita " +
+            "LEFT JOIN FETCH p.detallePedidos dp " +
+            "LEFT JOIN FETCH dp.producto " +
+            "WHERE p.id = :id")
+    Optional<PedidoResponseDTO.PedidoDTO> obtenerDetallesPedidoCompletoPorId(@Param("id") Long id);
 }

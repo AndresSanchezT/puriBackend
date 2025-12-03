@@ -2,6 +2,7 @@ package com.AndresSanchezDev.SISTEMASPURI.service;
 
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.DetalleListaPedidoDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ItemPedidoDTO;
+import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.PedidoResponseDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ReporteProductoDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.Pedido;
 
@@ -19,5 +20,6 @@ public interface PedidoService {
     long countPedidosTotales();
     List<ReporteProductoDTO> reporteProductosRegistrados();
     List<ItemPedidoDTO> validarStock(List<ItemPedidoDTO> items);
-    Optional<Pedido> obtenerPedidoCompleto(Long id);
+
+    Optional<PedidoResponseDTO.PedidoDTO> obtenerPedidoCompleto(Long idPedido);
 }

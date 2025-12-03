@@ -3,6 +3,7 @@ package com.AndresSanchezDev.SISTEMASPURI.controller;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.DetalleListaPedidoDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ItemPedidoDTO;
 
+import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.PedidoResponseDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ReporteProductoDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.Pedido;
 
@@ -39,17 +40,9 @@ public class PedidoController {
         return service.findAllDetallesPedido();
     }
 
-
-
     @GetMapping("/{id}")
-    public Optional<Pedido> getById(@PathVariable Long id) {
-        return service.findById(id);
-    }
-
-    @GetMapping("/completo/{id}")
-    public Pedido getPedidoCompleto(@PathVariable Long id) {
-        return service.obtenerPedidoCompleto(id)
-                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+    public Optional<PedidoResponseDTO.PedidoDTO> obtenerDetallePedidoCompletoPorId(@PathVariable Long id) {
+        return service.obtenerPedidoCompleto(id);
     }
 
     @GetMapping("/hoy")
