@@ -1,6 +1,7 @@
 package com.AndresSanchezDev.SISTEMASPURI.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,7 +12,7 @@ public class DetallePedido {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "id_pedido")
-    @JsonBackReference
+    @JsonIgnore
     private Pedido pedido;
     @ManyToOne
     @JoinColumn(name = "id_producto")

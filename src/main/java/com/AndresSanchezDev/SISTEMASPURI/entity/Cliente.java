@@ -24,7 +24,6 @@ public class Cliente {
     private Boolean tieneCredito;
 
     @OneToMany(mappedBy = "cliente")
-
     private List<Pedido> pedidos = new ArrayList<Pedido>();
 
     public Cliente() {

@@ -1,5 +1,6 @@
 package com.AndresSanchezDev.SISTEMASPURI.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -26,7 +27,7 @@ public class Pedido {
     private String estado;
     private String observaciones;
     @OneToMany(mappedBy = "pedido",cascade = CascadeType.ALL,orphanRemoval = true)
-    @JsonManagedReference
+    @JsonIgnore
     private List<DetallePedido> detallePedidos;
 
     public Pedido() {}

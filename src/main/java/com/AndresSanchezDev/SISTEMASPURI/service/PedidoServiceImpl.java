@@ -1,6 +1,7 @@
 package com.AndresSanchezDev.SISTEMASPURI.service;
 
 import com.AndresSanchezDev.SISTEMASPURI.entity.*;
+import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.DetalleListaPedidoDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ItemPedidoDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ReporteProductoDTO;
 import com.AndresSanchezDev.SISTEMASPURI.repository.*;
@@ -117,6 +118,12 @@ public class PedidoServiceImpl implements PedidoService {
         return pedidoRepository.findAll();
     }
 
+
+    @Override
+    public List<DetalleListaPedidoDTO> findAllDetallesPedido() {
+        return pedidoRepository.listarPedidosMinimos();
+    }
+
     @Override
     public Optional<Pedido> findById(Long id) {
         return pedidoRepository.findById(id);
@@ -200,6 +207,11 @@ public class PedidoServiceImpl implements PedidoService {
         }
 
         return faltantes;
+    }
+
+    @Override
+    public Optional<Pedido> obtenerPedidoCompleto(Long id) {
+        return pedidoRepository.obtenerPedidoCompleto(id);
     }
 
     // ----------------------------------------------------------
