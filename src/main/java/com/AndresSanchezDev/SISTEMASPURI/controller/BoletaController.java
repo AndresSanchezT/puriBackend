@@ -3,6 +3,8 @@ package com.AndresSanchezDev.SISTEMASPURI.controller;
 import com.AndresSanchezDev.SISTEMASPURI.entity.Boleta;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ActualizarEstadoBoletaDTO;
 import com.AndresSanchezDev.SISTEMASPURI.service.BoletaService;
+import net.sf.jasperreports.engine.JRException;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +28,39 @@ public class BoletaController {
     @GetMapping("/{id}")
     public Optional<Boleta> getById(@PathVariable Long id) {
         return service.findById(id);
+    }
+
+    @GetMapping("/{boletaId}/pdf")
+    public ResponseEntity<byte[]> generarBoleta(@PathVariable Long boletaId) {
+        try {
+            byte[] pdfBytes = service.generarBoleta(boletaId);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+
+            // ✅ Cambiar de attachment() a inline()
+            headers.setContentDisposition(
+                    ContentDisposition.inline()
+                            .filename("boleta_" + boletaId + ".pdf")
+                            .build()
+            );
+
+            // ✅ Agregar estos headers adicionales
+            headers.add("Content-Type", "application/pdf");
+            headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+            headers.add("Pragma", "no-cache");
+            headers.add("Expires", "0");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(pdfBytes);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
     }
 
     @PostMapping

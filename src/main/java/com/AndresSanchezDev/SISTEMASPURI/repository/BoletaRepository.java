@@ -10,4 +10,5 @@ public interface BoletaRepository extends JpaRepository<Boleta, Long> {
 
     @Query(value = "SELECT * FROM boleta ORDER BY id DESC LIMIT 1", nativeQuery = true)
     Boleta findUltimaBoleta();
+
 }

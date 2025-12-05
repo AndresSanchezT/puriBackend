@@ -14,7 +14,10 @@ import java.util.Optional;
 
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
-    @Query("SELECT p FROM Pedido p WHERE FUNCTION('DATE', p.fechaPedido) = CURRENT_DATE")
+    @Query(
+            value = "SELECT * FROM pedido p  ORDER BY p.id DESC",
+            nativeQuery = true
+    )
     List<Pedido> pedidosHoy();
 
     @Query(value = """

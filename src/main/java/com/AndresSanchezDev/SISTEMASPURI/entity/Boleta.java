@@ -1,5 +1,7 @@
 package com.AndresSanchezDev.SISTEMASPURI.entity;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -14,8 +16,10 @@ public class Boleta {
     @OneToOne
     private Pedido pedido;
     @ManyToOne
+    @JsonIgnore
     private Usuario vendedor;
     @ManyToOne
+    @JsonIgnore
     private Cliente cliente;
     private LocalDateTime fechaEmision;
     private Double subtotal;
