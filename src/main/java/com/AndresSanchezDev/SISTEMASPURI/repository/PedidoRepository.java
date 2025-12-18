@@ -47,7 +47,8 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
         c.nombreContacto AS nombreCliente,
         c.direccion AS direccion,
         p.estado AS estado,
-        c.tieneCredito AS tieneCredito
+        c.tieneCredito AS tieneCredito,
+        p.total AS total
     FROM Pedido p 
     JOIN p.cliente c
 """)

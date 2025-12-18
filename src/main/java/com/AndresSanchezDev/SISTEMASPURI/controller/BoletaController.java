@@ -3,13 +3,13 @@ package com.AndresSanchezDev.SISTEMASPURI.controller;
 import com.AndresSanchezDev.SISTEMASPURI.entity.Boleta;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ActualizarEstadoBoletaDTO;
 import com.AndresSanchezDev.SISTEMASPURI.service.BoletaService;
-import net.sf.jasperreports.engine.JRException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-
+@Slf4j
 @RestController
 @RequestMapping("/api/boletas")
 public class BoletaController {
@@ -33,31 +33,25 @@ public class BoletaController {
     @GetMapping("/{boletaId}/pdf")
     public ResponseEntity<byte[]> generarBoleta(@PathVariable Long boletaId) {
         try {
+            long inicio = System.currentTimeMillis();
             byte[] pdfBytes = service.generarBoleta(boletaId);
+            log.info("Boleta {} generada en {}ms", boletaId, System.currentTimeMillis() - inicio);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
-
-            // ✅ Cambiar de attachment() a inline()
             headers.setContentDisposition(
                     ContentDisposition.inline()
                             .filename("boleta_" + boletaId + ".pdf")
                             .build()
             );
-
-            // ✅ Agregar estos headers adicionales
-            headers.add("Content-Type", "application/pdf");
-            headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-            headers.add("Pragma", "no-cache");
-            headers.add("Expires", "0");
+            headers.setCacheControl(CacheControl.noCache());
 
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(pdfBytes);
 
         } catch (Exception e) {
-            System.err.println("❌ Error: " + e.getMessage());
-            e.printStackTrace();
+            log.error("❌ Error generando boleta {}: {}", boletaId, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         }

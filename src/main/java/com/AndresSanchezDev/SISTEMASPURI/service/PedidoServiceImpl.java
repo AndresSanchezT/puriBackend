@@ -74,6 +74,7 @@ public class PedidoServiceImpl implements PedidoService {
         pedidoData.setVisita(visita);
         pedidoData.setFechaPedido(LocalDateTime.now());
         pedidoData.setEstado("registrado");
+        pedidoData.setObservaciones(pedidoData.getObservaciones());
 
 //        double subtotal = pedidoData.getDetallePedidos().stream()
 //                .mapToDouble(DetallePedido::getSubtotal)
@@ -104,11 +105,14 @@ public class PedidoServiceImpl implements PedidoService {
         // 6. ACTUALIZAR STOCK (solo si no faltó stock o si se fuerza)
         if (faltantes.isEmpty() || forzarGuardar) {
             for (DetallePedido det : pedidoData.getDetallePedidos()) {
-                Producto p = det.getProducto();
-                int nuevoStock = p.getStockActual() - det.getCantidad();
-                p.setStockActual(Math.max(nuevoStock, 0));
-                productoRepository.save(p);
+                productoRepository.decrementarStock(
+                        det.getProducto().getId(),
+                        det.getCantidad()
+                );
             }
+
+            // Flush para asegurar que los updates se ejecuten
+            productoRepository.flush();
         }
 
         return pedidoGuardado;
@@ -133,6 +137,53 @@ public class PedidoServiceImpl implements PedidoService {
     @Override
     public Pedido save(Pedido pedido) {
         return pedidoRepository.save(pedido);
+    }
+
+    @Transactional
+    public Pedido update(Long id, Pedido pedidoNuevo) {
+
+        Pedido pedidoDB = pedidoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+
+        pedidoDB.setSubtotal(pedidoNuevo.getSubtotal());
+        pedidoDB.setIgv(pedidoNuevo.getIgv());
+        pedidoDB.setTotal(pedidoNuevo.getTotal());
+
+        // --- DETALLES (TU LÓGICA YA CORRECTA) ---
+        Map<Long, DetallePedido> existentes = pedidoDB.getDetallePedidos().stream()
+                .filter(d -> d.getId() != null)
+                .collect(Collectors.toMap(DetallePedido::getId, d -> d));
+
+        List<DetallePedido> nuevos = new ArrayList<>();
+
+        for (DetallePedido dNuevo : pedidoNuevo.getDetallePedidos()) {
+
+            if (dNuevo.getId() != null && existentes.containsKey(dNuevo.getId())) {
+                DetallePedido dDB = existentes.get(dNuevo.getId());
+                dDB.setCantidad(dNuevo.getCantidad());
+                dDB.setPrecioUnitario(dNuevo.getPrecioUnitario());
+                dDB.setSubtotal(dNuevo.getSubtotal());
+                nuevos.add(dDB);
+            } else {
+                dNuevo.setId(null);
+                dNuevo.setPedido(pedidoDB);
+                nuevos.add(dNuevo);
+            }
+        }
+
+        pedidoDB.getDetallePedidos().clear();
+        pedidoDB.getDetallePedidos().addAll(nuevos);
+
+        // --- SINCRONIZAR BOLETA (SI EXISTE) ---
+        boletaRepository.findByPedidoId(pedidoDB.getId())
+                .ifPresent(boleta -> {
+                    boleta.setSubtotal(pedidoDB.getSubtotal());
+                    boleta.setIgv(pedidoDB.getIgv());
+                    boleta.setTotal(pedidoDB.getTotal());
+                    boleta.setFechaRegistro(LocalDateTime.now());
+                });
+
+        return pedidoRepository.save(pedidoDB);
     }
 
     @Override

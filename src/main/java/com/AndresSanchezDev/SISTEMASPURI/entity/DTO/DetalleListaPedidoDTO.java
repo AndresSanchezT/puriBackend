@@ -6,4 +6,5 @@ public interface DetalleListaPedidoDTO {
     String getDireccion();
     String getEstado();
     Boolean getTieneCredito();
+    Double getTotal();
 }

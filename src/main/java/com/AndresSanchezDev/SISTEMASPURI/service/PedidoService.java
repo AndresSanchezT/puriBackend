@@ -15,6 +15,7 @@ public interface PedidoService {
     List<DetalleListaPedidoDTO> findAllDetallesPedido();
     Optional<Pedido> findById(Long id);
     Pedido save(Pedido pedido);
+    Pedido update(Long id, Pedido pedidoNuevo);
     void deleteById(Long id);
     List<Pedido> pedidosHoy();
     long countPedidosTotales();

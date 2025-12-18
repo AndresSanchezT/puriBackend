@@ -91,8 +91,7 @@ public class PedidoController {
 
     @PutMapping("/{id}")
     public Pedido update(@PathVariable Long id, @RequestBody Pedido pedido) {
-        pedido.setId(id);
-        return service.save(pedido);
+        return service.update(id, pedido);
     }
 
     @DeleteMapping("/{id}")
