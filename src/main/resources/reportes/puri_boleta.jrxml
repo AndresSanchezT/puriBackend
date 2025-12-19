@@ -50,24 +50,31 @@
             </image>
 
             <staticText>
-                <reportElement x="90" y="10" width="280" height="20" forecolor="#000000"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="15" isBold="true"/>
+                <reportElement x="90" y="10" width="280" height="10" forecolor="#1E3A8A"/>
+                <textElement verticalAlignment="Middle" textAlignment="Center">
+                    <font size="7" isBold="true"/>
                 </textElement>
-                <text><![CDATA[J & R DISTRIBUCIONES]]></text>
+                <text><![CDATA[INVERSIONES]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="90" y="15" width="280" height="30" forecolor="#1E3A8A"/>
+                <textElement verticalAlignment="Middle" textAlignment="Center">
+                    <font size="20" isBold="true" fontName="Arial"/>
+                </textElement>
+                <text><![CDATA[P U R I]]></text>
             </staticText>
 
             <staticText>
-                <reportElement x="90" y="30" width="280" height="10" forecolor="#000000"/>
+                <reportElement x="90" y="45" width="280" height="10" forecolor="#000000"/>
                 <textElement>
                     <font size="7"/>
                 </textElement>
-                <text><![CDATA[VENTAS AL POR MAYOR Y MENOR DE EMBUTIDOS, BOLSAS, QUESOS y MÁS]]></text>
+                <text><![CDATA[VENTAS AL POR MAYOR Y MENOR DE EMBUTIDOS, BOLSAS, QUESOS Y MÁS.]]></text>
             </staticText>
 
             <staticText>
-                <reportElement x="90" y="40" width="280" height="10" forecolor="#000000"/>
-                <textElement>
+                <reportElement x="90" y="55" width="280" height="10" forecolor="#000000"/>
+                <textElement textAlignment="Center">
                     <font size="7"/>
                 </textElement>
                 <text><![CDATA[PEDIDOS AL:📞 998743711]]></text>
@@ -100,25 +107,8 @@
                 </textElement>
                 <textFieldExpression><![CDATA[$P{codigo}]]></textFieldExpression>
             </textField>
-
-            <staticText>
-                <reportElement x="10" y="58" width="80" height="12"/>
-                <textElement>
-                    <font size="8" isBold="true"/>
-                </textElement>
-                <text><![CDATA[Fecha Emisión:]]></text>
-            </staticText>
-
-            <textField>
-                <reportElement x="90" y="58" width="120" height="12"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$P{fechaEmision}]]></textFieldExpression>
-            </textField>
-
             <line>
-                <reportElement x="0" y="72" width="555" height="1"/>
+                <reportElement x="0" y="72" width="554" height="1"/>
             </line>
 
         </band>
@@ -129,7 +119,7 @@
         <band height="45" splitType="Prevent">
 
             <rectangle>
-                <reportElement x="0" y="0" width="555" height="42" backcolor="#FFFFFF"/>
+                <reportElement x="0" y="0" width="554" height="42" backcolor="#FFFFFF"/>
             </rectangle>
 
             <staticText>
@@ -172,6 +162,101 @@
                 <text><![CDATA[RUC:]]></text>
             </staticText>
 
+            <!-- Etiqueta FECHA -->
+            <staticText>
+                <reportElement x="420" y="26" width="40" height="12"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[FECHA:]]></text>
+            </staticText>
+
+            <!-- Tablero de fecha: Headers -->
+            <rectangle>
+                <reportElement x="460" y="18" width="30" height="10" backcolor="#1E3A8A"/>
+                <graphicElement>
+                    <pen lineWidth="0.5"/>
+                </graphicElement>
+            </rectangle>
+            <staticText>
+                <reportElement x="460" y="18" width="30" height="10" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="6" isBold="true"/>
+                </textElement>
+                <text><![CDATA[DÍA]]></text>
+            </staticText>
+
+            <rectangle>
+                <reportElement x="490" y="18" width="30" height="10" backcolor="#1E3A8A"/>
+                <graphicElement>
+                    <pen lineWidth="0.5"/>
+                </graphicElement>
+            </rectangle>
+            <staticText>
+                <reportElement x="490" y="18" width="30" height="10" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="6" isBold="true"/>
+                </textElement>
+                <text><![CDATA[MES]]></text>
+            </staticText>
+
+            <rectangle>
+                <reportElement x="520" y="18" width="30" height="10" backcolor="#1E3A8A"/>
+                <graphicElement>
+                    <pen lineWidth="0.5"/>
+                </graphicElement>
+            </rectangle>
+            <staticText>
+                <reportElement x="520" y="18" width="30" height="10" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="6" isBold="true"/>
+                </textElement>
+                <text><![CDATA[AÑO]]></text>
+            </staticText>
+
+            <!-- Tablero de fecha: Valores -->
+            <rectangle>
+                <reportElement x="460" y="28" width="30" height="10" backcolor="#FFFFFF"/>
+                <graphicElement>
+                    <pen lineWidth="0.5"/>
+                </graphicElement>
+            </rectangle>
+            <textField>
+                <reportElement x="460" y="28" width="30" height="10"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="7" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{fechaEmision}.substring(0, 2)]]></textFieldExpression>
+            </textField>
+
+            <rectangle>
+                <reportElement x="490" y="28" width="30" height="10" backcolor="#FFFFFF"/>
+                <graphicElement>
+                    <pen lineWidth="0.5"/>
+                </graphicElement>
+            </rectangle>
+            <textField>
+                <reportElement x="490" y="28" width="30" height="10"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="7" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{fechaEmision}.substring(3, 5)]]></textFieldExpression>
+            </textField>
+
+            <rectangle>
+                <reportElement x="520" y="28" width="30" height="10" backcolor="#FFFFFF"/>
+                <graphicElement>
+                    <pen lineWidth="0.5"/>
+                </graphicElement>
+            </rectangle>
+            <textField>
+                <reportElement x="520" y="28" width="30" height="10"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="7" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{fechaEmision}.substring(6, 10)]]></textFieldExpression>
+            </textField>
+
         </band>
     </pageHeader>
 
@@ -180,7 +265,7 @@
         <band height="20" splitType="Prevent">
 
             <rectangle>
-                <reportElement x="0" y="0" width="555" height="20" backcolor="#1E3A8A"/>
+                <reportElement x="0" y="0" width="554" height="19" backcolor="#1E3A8A"/>
             </rectangle>
 
             <staticText>
@@ -196,15 +281,23 @@
                 <textElement textAlignment="Center" verticalAlignment="Middle">
                     <font size="8" isBold="true"/>
                 </textElement>
-                <text><![CDATA[P. UNIT]]></text>
+                <text><![CDATA[U.M]]></text>
             </staticText>
 
             <staticText>
                 <reportElement x="85" y="0" width="330" height="20" forecolor="#FFFFFF"/>
-                <textElement verticalAlignment="Middle">
+                <textElement verticalAlignment="Middle" textAlignment="Center">
                     <font size="8" isBold="true"/>
                 </textElement>
                 <text><![CDATA[DESCRIPCIÓN]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="360" y="0" width="135" height="20" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[P. UNIT.]]></text>
             </staticText>
 
             <staticText>
@@ -224,7 +317,7 @@
 
             <!-- Rectángulo de fondo con color intercalado -->
             <rectangle>
-                <reportElement x="0" y="0" width="555" height="14" backcolor="#FFFFFF">
+                <reportElement x="0" y="0" width="554" height="14" backcolor="#E0F2FE">
                     <printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></printWhenExpression>
                 </reportElement>
                 <graphicElement>
@@ -233,7 +326,7 @@
             </rectangle>
 
             <rectangle>
-                <reportElement x="0" y="0" width="555" height="14" backcolor="#E0F2FE">
+                <reportElement x="0" y="0" width="554" height="14" backcolor="#FFFFFF">
                     <printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 != 0]]></printWhenExpression>
                 </reportElement>
                 <graphicElement>
@@ -251,10 +344,10 @@
 
             <textField>
                 <reportElement x="35" y="0" width="50" height="13"/>
-                <textElement textAlignment="Center" verticalAlignment="Middle">
+                <textElement textAlignment="Left" verticalAlignment="Middle">
                     <font size="8"/>
                 </textElement>
-                <textFieldExpression><![CDATA[$F{precioUnitario}]]></textFieldExpression>
+                <textFieldExpression><![CDATA[$F{unidadMedida}]]></textFieldExpression>
             </textField>
 
             <textField>
@@ -263,6 +356,14 @@
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{nombreProducto}]]></textFieldExpression>
+            </textField>
+
+            <textField>
+                <reportElement x="445" y="0" width="50" height="13"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{precioUnitario}]]></textFieldExpression>
             </textField>
 
             <textField>

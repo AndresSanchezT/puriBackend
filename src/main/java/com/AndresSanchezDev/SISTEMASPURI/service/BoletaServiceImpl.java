@@ -181,7 +181,7 @@ public class BoletaServiceImpl implements BoletaService {
         parametros.put("codigo", boleta.getCodigo());
 
         // Fecha formateada
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         parametros.put("fechaEmision", boleta.getFechaEmision().format(formatter));
 
         // ========== DATOS DEL CLIENTE ==========
