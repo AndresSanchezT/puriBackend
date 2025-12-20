@@ -221,24 +221,45 @@ public class BoletaServiceImpl implements BoletaService {
     }
 
     private List<DetalleBoletaDTO> prepararDetalles(Boleta boleta) {
-        List<DetallePedido> detallesPedido = boleta.getPedido().getDetallePedidos();
 
-        if (detallesPedido == null || detallesPedido.isEmpty()) {
-            log.warn("⚠️ Boleta {} sin detalles de pedido", boleta.getId());
-            return Collections.emptyList();
+        final int FILAS_FIJAS = 11;
+
+        List<DetallePedido> detallesPedido =
+                boleta.getPedido() != null
+                        ? boleta.getPedido().getDetallePedidos()
+                        : Collections.emptyList();
+
+        List<DetalleBoletaDTO> resultado = new ArrayList<>();
+
+        // 1️⃣ Mapear los detalles reales
+        for (DetallePedido detalle : detallesPedido) {
+
+            DetalleBoletaDTO dto = new DetalleBoletaDTO();
+
+            if (detalle.getProducto() != null) {
+                dto.setCodigoProducto(detalle.getProducto().getCodigo());
+                dto.setNombreProducto(detalle.getProducto().getNombre());
+                dto.setUnidadMedida(detalle.getProducto().getUnidadMedida());
+            }
+
+            dto.setCantidad(detalle.getCantidad());
+            dto.setPrecioUnitario(
+                    BigDecimal.valueOf(detalle.getPrecioUnitario())
+            );
+            dto.setSubtotalDetalle(
+                    detalle.getSubtotal() != null
+                            ? BigDecimal.valueOf(detalle.getSubtotal())
+                            : null
+            );
+
+            resultado.add(dto);
         }
 
-        return detallesPedido.stream()
-                .map(detalle -> {
-                    DetalleBoletaDTO dto = new DetalleBoletaDTO();
-                    dto.setCodigoProducto(detalle.getProducto().getCodigo());
-                    dto.setNombreProducto(detalle.getProducto().getNombre());
-                    dto.setUnidadMedida(detalle.getProducto().getUnidadMedida());
-                    dto.setCantidad(detalle.getCantidad());
-                    dto.setPrecioUnitario(BigDecimal.valueOf(detalle.getPrecioUnitario()));
-                    dto.setSubtotalDetalle(BigDecimal.valueOf(detalle.getSubtotal()));
-                    return dto;
-                })
-                .collect(Collectors.toList());
+        // 2️⃣ Completar filas vacías
+        while (resultado.size() < FILAS_FIJAS) {
+            resultado.add(new DetalleBoletaDTO());
+        }
+
+        return resultado;
     }
 }

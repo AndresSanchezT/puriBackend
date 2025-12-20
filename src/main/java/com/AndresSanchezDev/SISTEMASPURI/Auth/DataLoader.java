@@ -1,0 +1,126 @@
+package com.AndresSanchezDev.SISTEMASPURI.Auth;
+
+import com.AndresSanchezDev.SISTEMASPURI.entity.Rol;
+import com.AndresSanchezDev.SISTEMASPURI.entity.Usuario;
+import com.AndresSanchezDev.SISTEMASPURI.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+@Component
+public class DataLoader implements CommandLineRunner {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+
+    @Override
+    @Transactional
+    public void run(String... args) throws Exception {
+        System.out.println("🔧 =========================================");
+        System.out.println("🔧 INICIANDO CREACIÓN DE USUARIOS DE PRUEBA");
+        System.out.println("🔧 =========================================");
+
+        // Crear ADMIN
+        if (usuarioRepository.findByUsuario("admin123").isEmpty()) {
+            crearUsuarioAdmin();
+        } else {
+            System.out.println("⏭️  Usuario admin ya existe, omitiendo...");
+        }
+
+        // Crear VENDEDOR
+        if (usuarioRepository.findByUsuario("alocatee").isEmpty()) {
+            crearUsuarioVendedor();
+        } else {
+            System.out.println("⏭️  Usuario vendedor ya existe, omitiendo...");
+        }
+
+        // Crear REPARTIDOR
+        if (usuarioRepository.findByUsuario("alfredotubebita123").isEmpty()) {
+            crearUsuarioRepartidor();
+        } else {
+            System.out.println("⏭️  Usuario repartidor ya existe, omitiendo...");
+        }
+
+        System.out.println("🎯 =========================================");
+        System.out.println("🎯 CREACIÓN DE USUARIOS COMPLETADA");
+        System.out.println("🎯 =========================================");
+    }
+
+    private void crearUsuarioAdmin() {
+        try {
+            // 1. Crear Usuario
+            Usuario admin = new Usuario();
+            admin.setNombre("Edwin Puri Castro");
+            admin.setCorreo("jyr@hotmai.com");
+            admin.setRol(Rol.ADMINISTRADOR);
+            admin.setTelefono("987437118");
+            admin.setUsuario("admin123");
+            admin.setContrasena(passwordEncoder.encode("ocote123"));
+            // Guardar
+            usuarioRepository.save(admin);
+
+            System.out.println("✅ ADMIN CREADO:");
+            System.out.println("   👤 Usuario: admin123");
+            System.out.println("   🔑 Password: ocote123");
+            System.out.println("   📋 Permisos: Acceso total al sistema");
+
+        } catch (Exception e) {
+            System.err.println("❌ Error creando usuario admin: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void crearUsuarioVendedor() {
+        try {
+            // 1. Crear Usuario
+            Usuario vendedor = new Usuario();
+            vendedor.setNombre("Cristian Rodriguez Trujillo");
+            vendedor.setCorreo("crt@hotmail.com");
+            vendedor.setRol(Rol.VENDEDOR);
+            vendedor.setUsuario("alocatee");
+            vendedor.setTelefono("123456789");
+            vendedor.setContrasena(passwordEncoder.encode("alocatee123"));
+            // Guardar
+            usuarioRepository.save(vendedor);
+
+            System.out.println("✅ VENDEDOR CREADO:");
+            System.out.println("   👤 Usuario: alocatee");
+            System.out.println("   🔑 Password: alocatee123");
+            System.out.println("   📋 Permisos: Accesos Limitados");
+
+        } catch (Exception e) {
+            System.err.println("❌ Error creando usuario admin: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void crearUsuarioRepartidor() {
+        try {
+            // 1. Crear Usuario
+            Usuario repartidor = new Usuario();
+            repartidor.setNombre("Alfredo la bebita");
+            repartidor.setCorreo("alfredBebita@hotmail.com");
+            repartidor.setRol(Rol.REPARTIDOR);
+            repartidor.setUsuario("alfredotubebita123");
+            repartidor.setTelefono("985465232");
+            repartidor.setContrasena(passwordEncoder.encode("ocote123"));
+            // Guardar
+            usuarioRepository.save(repartidor);
+
+            System.out.println("✅ REPARTIDOR CREADO:");
+            System.out.println("   👤 Usuario: alfredotubebita123");
+            System.out.println("   🔑 Password: ocote123");
+            System.out.println("   📋 Permisos: Accesos Limitados");
+
+        } catch (Exception e) {
+            System.err.println("❌ Error creando usuario admin: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}
