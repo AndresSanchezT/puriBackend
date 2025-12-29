@@ -129,7 +129,7 @@ public class PedidoResponseDTO {
     public static class DetallePedidoDTO {
         private Long id;
         private ProductoDTO producto;
-        private int cantidad;
+        private Double cantidad;
         private double precioUnitario;
         private Double subtotal;
 
@@ -159,11 +159,11 @@ public class PedidoResponseDTO {
             this.producto = producto;
         }
 
-        public int getCantidad() {
+        public Double getCantidad() {
             return cantidad;
         }
 
-        public void setCantidad(int cantidad) {
+        public void setCantidad(Double cantidad) {
             this.cantidad = cantidad;
         }
 

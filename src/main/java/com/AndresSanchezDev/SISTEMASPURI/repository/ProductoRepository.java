@@ -30,5 +30,5 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     WHERE p.id = :productoId
 """)
     void decrementarStock(@Param("productoId") Long productoId,
-                          @Param("cantidad") Integer cantidad);
+                          @Param("cantidad") Double cantidad);
 }

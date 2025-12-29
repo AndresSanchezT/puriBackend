@@ -15,16 +15,16 @@ public class ProductoFaltante {
 
     private String nombreProducto;
 
-    private int stockActual;
+    private Double stockActual;
 
-    private int cantidadSolicitada;
+    private Double cantidadSolicitada;
 
-    private int cantidadFaltante;
+    private Double cantidadFaltante;
 
     public ProductoFaltante() {
     }
 
-    public ProductoFaltante(Long id, Long productoId, String nombreProducto, int stockActual, int cantidadSolicitada, int cantidadFaltante) {
+    public ProductoFaltante(Long id, Long productoId, String nombreProducto, Double stockActual, Double cantidadSolicitada, Double cantidadFaltante) {
         this.id = id;
         this.productoId = productoId;
         this.nombreProducto = nombreProducto;
@@ -57,27 +57,27 @@ public class ProductoFaltante {
         this.nombreProducto = nombreProducto;
     }
 
-    public int getStockActual() {
+    public Double getStockActual() {
         return stockActual;
     }
 
-    public void setStockActual(int stockActual) {
+    public void setStockActual(Double stockActual) {
         this.stockActual = stockActual;
     }
 
-    public int getCantidadSolicitada() {
+    public Double getCantidadSolicitada() {
         return cantidadSolicitada;
     }
 
-    public void setCantidadSolicitada(int cantidadSolicitada) {
+    public void setCantidadSolicitada(Double cantidadSolicitada) {
         this.cantidadSolicitada = cantidadSolicitada;
     }
 
-    public int getCantidadFaltante() {
+    public Double getCantidadFaltante() {
         return cantidadFaltante;
     }
 
-    public void setCantidadFaltante(int cantidadFaltante) {
+    public void setCantidadFaltante(Double cantidadFaltante) {
         this.cantidadFaltante = cantidadFaltante;
     }
 }

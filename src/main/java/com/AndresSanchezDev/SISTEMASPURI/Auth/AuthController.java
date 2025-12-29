@@ -36,9 +36,11 @@ public class AuthController {
         );
 
         Usuario usuario = (Usuario) authentication.getPrincipal();
+
+        // ✅ El JwtService ahora agrega el rol automáticamente
         String jwt = jwtService.generateToken(usuario);
 
-        LoginResponse response = new LoginResponse(jwt, usuario.getUsername(),
+        LoginResponse response = new LoginResponse(jwt, usuario.getId(), usuario.getUsername(),
                 usuario.getRol(), usuario.getNombre());
 
         return ResponseEntity.ok(response);

@@ -5,14 +5,14 @@ import java.math.BigDecimal;
 public class ReporteProductoDTO {
 
     private String nombreProducto;
-    private BigDecimal totalProductos;
-    private Integer stockActual;
-    private Integer stockMinimo;
+    private Double totalProductos;
+    private Double stockActual;
+    private Double stockMinimo;
     private String estado;
 
     public ReporteProductoDTO() {}
 
-    public ReporteProductoDTO(String nombreProducto, BigDecimal totalProductos, Integer stockActual, Integer stockMinimo, String estado) {
+    public ReporteProductoDTO(String nombreProducto, Double totalProductos, Double stockActual, Double stockMinimo, String estado) {
         this.nombreProducto = nombreProducto;
         this.totalProductos = totalProductos;
         this.stockActual = stockActual;
@@ -28,27 +28,27 @@ public class ReporteProductoDTO {
         this.nombreProducto = nombreProducto;
     }
 
-    public BigDecimal getTotalProductos() {
+    public Double getTotalProductos() {
         return totalProductos;
     }
 
-    public void setTotalProductos(BigDecimal totalProductos) {
+    public void setTotalProductos(Double totalProductos) {
         this.totalProductos = totalProductos;
     }
 
-    public Integer getStockActual() {
+    public Double getStockActual() {
         return stockActual;
     }
 
-    public void setStockActual(Integer stockActual) {
+    public void setStockActual(Double stockActual) {
         this.stockActual = stockActual;
     }
 
-    public Integer getStockMinimo() {
+    public Double getStockMinimo() {
         return stockMinimo;
     }
 
-    public void setStockMinimo(Integer stockMinimo) {
+    public void setStockMinimo(Double stockMinimo) {
         this.stockMinimo = stockMinimo;
     }
 

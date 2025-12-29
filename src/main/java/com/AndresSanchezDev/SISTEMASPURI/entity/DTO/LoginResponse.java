@@ -4,6 +4,7 @@ import com.AndresSanchezDev.SISTEMASPURI.entity.Rol;
 
 public class LoginResponse {
     private String token;
+    private Long id;
     private String username;
     private Rol role;
     private String nombre;
@@ -11,8 +12,9 @@ public class LoginResponse {
     public LoginResponse() {
     }
 
-    public LoginResponse(String token, String username, Rol role, String nombre) {
+    public LoginResponse(String token,Long id, String username, Rol role, String nombre) {
         this.token = token;
+        this.id = id;
         this.username = username;
         this.role = role;
         this.nombre = nombre;
@@ -24,6 +26,14 @@ public class LoginResponse {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUsername() {

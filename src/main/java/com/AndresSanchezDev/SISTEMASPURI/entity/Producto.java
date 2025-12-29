@@ -15,9 +15,9 @@ public class Producto {
     private String codigo;
     private String nombre;
     private Double precio;
-    private int stockActual;
-    private int stockMinimo;
-    private int cantidadFaltante;
+    private Double stockActual;
+    private Double stockMinimo;
+    private Double cantidadFaltante;
     private String unidadMedida;
     private String estado;
     private String tipo;
@@ -31,7 +31,7 @@ public class Producto {
     public Producto() {
     }
 
-    public Producto(Long id, String codigo, String nombre, Double precio, int stockActual, int stockMinimo,int cantidadFaltante, String unidadMedida, String estado, String tipo, String descripcion, LocalDate fechaCreacion, LocalDate fechaActualizacion) {
+    public Producto(Long id, String codigo, String nombre, Double precio, Double stockActual, Double stockMinimo,Double cantidadFaltante, String unidadMedida, String estado, String tipo, String descripcion, LocalDate fechaCreacion, LocalDate fechaActualizacion) {
         this.id = id;
         this.codigo = codigo;
         this.nombre = nombre;
@@ -79,26 +79,26 @@ public class Producto {
         this.precio = precio;
     }
 
-    public int getStockActual() {
+    public Double getStockActual() {
         return stockActual;
     }
 
-    public void setStockActual(int stockActual) {
+    public void setStockActual(Double stockActual) {
         this.stockActual = stockActual;
     }
 
-    public int getStockMinimo() {
+    public Double getStockMinimo() {
         return stockMinimo;
     }
 
-    public void setStockMinimo(int stockMinimo) {
+    public void setStockMinimo(Double stockMinimo) {
         this.stockMinimo = stockMinimo;
     }
 
-    public int getCantidadFaltante() {
+    public Double getCantidadFaltante() {
         return cantidadFaltante;
     }
-    public void setCantidadFaltante(int cantidadFaltante) {
+    public void setCantidadFaltante(Double cantidadFaltante) {
         this.cantidadFaltante = cantidadFaltante;
     }
     public String getUnidadMedida() {

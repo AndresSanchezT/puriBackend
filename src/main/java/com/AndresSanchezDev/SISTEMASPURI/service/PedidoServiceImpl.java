@@ -1,10 +1,7 @@
 package com.AndresSanchezDev.SISTEMASPURI.service;
 
 import com.AndresSanchezDev.SISTEMASPURI.entity.*;
-import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.DetalleListaPedidoDTO;
-import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ItemPedidoDTO;
-import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.PedidoResponseDTO;
-import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ReporteProductoDTO;
+import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.*;
 import com.AndresSanchezDev.SISTEMASPURI.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,9 +32,14 @@ public class PedidoServiceImpl implements PedidoService {
     @Autowired
     private ProductoFaltanteRepository productoFaltanteRepository;
 
+    // Estados válidos del sistema
+    private static final List<String> ESTADOS_VALIDOS = Arrays.asList(
+            "registrado", "entregado", "anulado"
+    );
+
     @Transactional
     @Override
-    public Pedido registrarPedidoConVisitaYDetalles(Long idCliente, Long idVendedor,
+    public DetalleListaPedidoDTO registrarPedidoConVisitaYDetalles(Long idCliente, Long idVendedor,
                                                     Pedido pedidoData, boolean forzarGuardar) {
 
         // 1. Validar stock antes de guardar (NO toca DB)
@@ -115,7 +118,9 @@ public class PedidoServiceImpl implements PedidoService {
             productoRepository.flush();
         }
 
-        return pedidoGuardado;
+        // ✅ 7. OBTENER Y DEVOLVER EL DTO
+        return pedidoRepository.findDetallePedidoMinimosById(pedidoGuardado.getId())
+                .orElseThrow(() -> new RuntimeException("Error al obtener el pedido creado"));
     }
 
     @Override
@@ -233,7 +238,7 @@ public class PedidoServiceImpl implements PedidoService {
                 throw new RuntimeException("Producto no encontrado: " + item.getProductoId());
             }
 
-            int faltante = Math.max(0, item.getCantidadSolicitada() - p.getStockActual());
+            Double faltante = Math.max(0, item.getCantidadSolicitada() - p.getStockActual());
 
             if (faltante > 0) {
                 ItemPedidoDTO dto = new ItemPedidoDTO(
@@ -265,6 +270,87 @@ public class PedidoServiceImpl implements PedidoService {
     public Optional<PedidoResponseDTO.PedidoDTO> obtenerPedidoCompleto(Long idPedido) {
             return pedidoRepository.obtenerDetallesPedidoCompletoPorId(idPedido);
     }
+
+    //FUNCIONES PARA CAMBIAR ESTADO DE PEDIDOS:
+    @Transactional
+    @Override
+    public void cambiarEstado(Long pedidoId, CambiarEstadoPedidoDTO dto) {
+        // Validar que el estado sea válido
+        String nuevoEstado = dto.getNuevoEstado().toLowerCase();
+        if (!ESTADOS_VALIDOS.contains(nuevoEstado)) {
+            throw new IllegalArgumentException(
+                    "Estado inválido. Estados permitidos: " + ESTADOS_VALIDOS
+            );
+        }
+
+        // Obtener estado actual del pedido
+        String estadoActual = pedidoRepository.obtenerEstadoPedido(pedidoId);
+        if (estadoActual == null) {
+            throw new IllegalArgumentException("Pedido no encontrado con ID: " + pedidoId);
+        }
+
+        // Validar transiciones de estado permitidas
+        validarTransicionEstado(estadoActual, nuevoEstado);
+
+        // Actualizar estado de forma optimizada
+        int filasActualizadas = pedidoRepository.actualizarEstado(pedidoId, nuevoEstado);
+
+        if (filasActualizadas == 0) {
+            throw new RuntimeException("No se pudo actualizar el estado del pedido");
+        }
+
+        // Si se anula, registrar el motivo (opcional: crear tabla de auditoría)
+//        if ("anulado".equals(nuevoEstado) && dto.getMotivoAnulacion() != null) {
+//            registrarAnulacion(pedidoId, dto.getMotivoAnulacion());
+//        }
+    }
+
+    @Override
+    public void validarTransicionEstado(String estadoActual, String nuevoEstado) {
+        // Un pedido anulado no puede cambiar de estado
+        if ("anulado".equals(estadoActual)) {
+            throw new IllegalStateException(
+                    "No se puede cambiar el estado de un pedido anulado"
+            );
+        }
+
+        // Un pedido entregado solo puede ser anulado
+        if ("entregado".equals(estadoActual) && !"anulado".equals(nuevoEstado)) {
+            throw new IllegalStateException(
+                    "Un pedido entregado solo puede ser anulado"
+            );
+        }
+
+        // Un pedido registrado puede ser entregado o anulado
+        if ("registrado".equals(estadoActual)) {
+            if (!("entregado".equals(nuevoEstado) || "anulado".equals(nuevoEstado))) {
+                throw new IllegalStateException(
+                        "Un pedido registrado solo puede pasar a 'entregado' o 'anulado'"
+                );
+            }
+        }
+    }
+
+    /**
+     * Registra el motivo de anulación (opcional)
+     * Podrías crear una tabla de auditoría para esto
+     */
+//    @Override
+//    public void registrarAnulacion(Long pedidoId, String motivo) {
+//        // Aquí podrías guardar en una tabla de auditoría
+//        // Por ahora solo actualizamos el campo observaciones
+//        Pedido pedido = pedidoRepository.findById(pedidoId)
+//                .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado"));
+//
+//        String observacionActual = pedido.getObservaciones() != null
+//                ? pedido.getObservaciones()
+//                : "";
+//        pedido.setObservaciones(
+//                observacionActual + " | ANULADO: " + motivo
+//        );
+//        pedidoRepository.save(pedido);
+//    }
+
 
     // ----------------------------------------------------------
 // Método para generar códigos únicos

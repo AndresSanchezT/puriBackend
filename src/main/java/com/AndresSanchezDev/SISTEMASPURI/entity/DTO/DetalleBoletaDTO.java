@@ -6,7 +6,7 @@ public class DetalleBoletaDTO {
     private String codigoProducto;
     private String nombreProducto;
     private String unidadMedida;
-    private Integer cantidad;
+    private BigDecimal cantidad;
     private BigDecimal precioUnitario;
     private BigDecimal subtotalDetalle;
 
@@ -20,8 +20,8 @@ public class DetalleBoletaDTO {
     public String getUnidadMedida() { return unidadMedida; }
     public void setUnidadMedida(String unidadMedida) { this.unidadMedida = unidadMedida; }
 
-    public Integer getCantidad() { return cantidad; }
-    public void setCantidad(Integer cantidad) { this.cantidad = cantidad; }
+    public BigDecimal getCantidad() { return cantidad; }
+    public void setCantidad(BigDecimal cantidad) { this.cantidad = cantidad; }
 
     public BigDecimal getPrecioUnitario() { return precioUnitario; }
     public void setPrecioUnitario(BigDecimal precioUnitario) { this.precioUnitario = precioUnitario; }

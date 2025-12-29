@@ -5,6 +5,7 @@ import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.PedidoResponseDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.ReporteProductoDTO;
 import com.AndresSanchezDev.SISTEMASPURI.entity.Pedido;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -54,6 +55,20 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 """)
     List<DetalleListaPedidoDTO> listarPedidosMinimos();
 
+    @Query("""
+    SELECT 
+        p.id as id,
+        c.nombreContacto AS nombreCliente,
+        c.direccion AS direccion,
+        p.estado AS estado,
+        c.tieneCredito AS tieneCredito,
+        p.total AS total
+    FROM Pedido p 
+    JOIN p.cliente c
+    WHERE p.id = :id
+""")
+    Optional<DetalleListaPedidoDTO> findDetallePedidoMinimosById(@Param("id") Long id);
+
 
     @Query("SELECT DISTINCT p FROM Pedido p " +
             "LEFT JOIN FETCH p.cliente " +
@@ -63,4 +78,13 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
             "LEFT JOIN FETCH dp.producto " +
             "WHERE p.id = :id")
     Optional<PedidoResponseDTO.PedidoDTO> obtenerDetallesPedidoCompletoPorId(@Param("id") Long id);
+
+    // Query optimizada que solo actualiza el estado sin cargar toda la entidad
+    @Modifying
+    @Query("UPDATE Pedido p SET p.estado = :estado WHERE p.id = :id")
+    int actualizarEstado(@Param("id") Long id, @Param("estado") String estado);
+
+    // Verificar si el pedido existe y obtener su estado actual
+    @Query("SELECT p.estado FROM Pedido p WHERE p.id = :id")
+    String obtenerEstadoPedido(@Param("id") Long id);
 }

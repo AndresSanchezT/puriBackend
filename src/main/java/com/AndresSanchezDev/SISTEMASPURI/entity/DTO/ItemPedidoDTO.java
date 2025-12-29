@@ -3,19 +3,19 @@ package com.AndresSanchezDev.SISTEMASPURI.entity.DTO;
 public class ItemPedidoDTO {
     private Long productoId;
     private String nombre;
-    private int cantidadSolicitada;
-    private int stockActual;
-    private int cantidadFaltante;
+    private Double cantidadSolicitada;
+    private Double stockActual;
+    private Double cantidadFaltante;
 
     public ItemPedidoDTO() {
     }
 
-    public ItemPedidoDTO(Long productoId, int cantidadSolicitada) {
+    public ItemPedidoDTO(Long productoId, Double cantidadSolicitada) {
         this.productoId = productoId;
         this.cantidadSolicitada = cantidadSolicitada;
     }
 
-    public ItemPedidoDTO(Long productoId,String nombre,  int stockActual,  int cantidadSolicitada, int cantidadFaltante) {
+    public ItemPedidoDTO(Long productoId,String nombre,  Double stockActual,  Double cantidadSolicitada, Double cantidadFaltante) {
         this.productoId = productoId;
         this.nombre = nombre;
         this.cantidadSolicitada = cantidadSolicitada;
@@ -37,27 +37,27 @@ public class ItemPedidoDTO {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-    public int getCantidadSolicitada() {
+    public Double getCantidadSolicitada() {
         return cantidadSolicitada;
     }
 
-    public void setCantidadSolicitada(int cantidadSolicitada) {
+    public void setCantidadSolicitada(Double cantidadSolicitada) {
         this.cantidadSolicitada = cantidadSolicitada;
     }
 
-    public int getStockActual() {
+    public Double getStockActual() {
         return stockActual;
     }
 
-    public void setStockActual(int stockActual) {
+    public void setStockActual(Double stockActual) {
         this.stockActual = stockActual;
     }
 
-    public int getCantidadFaltante() {
+    public Double getCantidadFaltante() {
         return cantidadFaltante;
     }
 
-    public void setCantidadFaltante(int cantidadFaltante) {
+    public void setCantidadFaltante(Double cantidadFaltante) {
         this.cantidadFaltante = cantidadFaltante;
     }
 }

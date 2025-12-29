@@ -193,7 +193,14 @@ public class BoletaServiceImpl implements BoletaService {
         // ========== TOTALES ==========
         parametros.put("subtotal", BigDecimal.valueOf(boleta.getSubtotal()));
         parametros.put("igv", BigDecimal.valueOf(boleta.getIgv()));
-        parametros.put("total", BigDecimal.valueOf(boleta.getTotal()));
+
+        // ✅ Verificar si algún producto tiene unidad de medida "KGR"
+        boolean tieneProductoKGR = boleta.getPedido().getDetallePedidos().stream()
+                .anyMatch(detalle -> detalle.getProducto() != null &&
+                        "KGR".equals(detalle.getProducto().getUnidadMedida()));
+
+        // Si tiene producto KGR, enviar null, sino enviar el total
+        parametros.put("total", tieneProductoKGR ? null : BigDecimal.valueOf(boleta.getTotal()));
 
         // ========== OBSERVACIONES ==========
         String observaciones = boleta.getPedido().getObservaciones();
@@ -242,15 +249,21 @@ public class BoletaServiceImpl implements BoletaService {
                 dto.setUnidadMedida(detalle.getProducto().getUnidadMedida());
             }
 
-            dto.setCantidad(detalle.getCantidad());
+            BigDecimal cantidad = BigDecimal.valueOf(detalle.getCantidad()).stripTrailingZeros();
+            dto.setCantidad(cantidad);
             dto.setPrecioUnitario(
                     BigDecimal.valueOf(detalle.getPrecioUnitario())
             );
-            dto.setSubtotalDetalle(
-                    detalle.getSubtotal() != null
-                            ? BigDecimal.valueOf(detalle.getSubtotal())
-                            : null
-            );
+            if(detalle.getProducto() != null &&
+                    "KGR".equals(detalle.getProducto().getUnidadMedida())){
+                dto.setSubtotalDetalle(null);
+            } else {
+                dto.setSubtotalDetalle(
+                        detalle.getSubtotal() != null
+                                ? BigDecimal.valueOf(detalle.getSubtotal())
+                                : null
+                );
+            }
 
             resultado.add(dto);
         }

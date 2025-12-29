@@ -19,6 +19,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
+/**
+ * Configuración de seguridad del sistema
+ *
+ * ROLES:
+ * - ADMINISTRADOR: Acceso total
+ * - VENDEDOR: Crear/ver pedidos, visitas, consultar clientes y productos
+ * - REPARTIDOR: Ver pedidos y cambiar estado de entrega
+ */
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
@@ -31,35 +39,98 @@ public class SecurityConfig {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ Habilita CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ Endpoints públicos
+                        // ========================================
+                        // ENDPOINTS PÚBLICOS (Sin autenticación)
+                        // ========================================
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        // ✅ PEDIDOS - Orden específico (más restrictivo primero)
-                        .requestMatchers(HttpMethod.GET, "/api/pedidos/**").hasAnyRole("ADMINISTRADOR", "VENDEDOR")
-                        .requestMatchers(HttpMethod.POST, "/api/pedidos/**").hasAnyRole("ADMINISTRADOR", "VENDEDOR")
-                        .requestMatchers("/api/pedidos/**").hasRole("ADMINISTRADOR") // Otros métodos solo ADMIN
+                        // ========================================
+                        // CLIENTES - Permisos por método HTTP
+                        // ========================================
+                        // GET: ADMIN y VENDEDOR pueden consultar
+                        .requestMatchers(HttpMethod.GET, "/api/clientes/**")
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR")
 
-                        // ✅ VISITAS - Similar a pedidos
-                        .requestMatchers(HttpMethod.GET, "/api/visitas/**").hasAnyRole("ADMINISTRADOR", "VENDEDOR")
-                        .requestMatchers(HttpMethod.POST, "/api/visitas/**").hasAnyRole("ADMINISTRADOR", "VENDEDOR")
-                        .requestMatchers("/api/visitas/**").hasRole("ADMINISTRADOR")
+                        // POST, PUT, DELETE: Solo ADMIN
+                        .requestMatchers(HttpMethod.POST, "/api/clientes/**")
+                        .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/clientes/**")
+                        .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/clientes/**")
+                        .hasRole("ADMINISTRADOR")
 
-                        // ✅ SOLO ADMIN - Gestión completa
+                        // ========================================
+                        // PRODUCTOS - Permisos por método HTTP
+                        // ========================================
+                        // GET: ADMIN y VENDEDOR pueden consultar
+                        .requestMatchers(HttpMethod.GET, "/api/productos/**")
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR")
+
+                        // POST, PUT, DELETE: Solo ADMIN
+                        .requestMatchers(HttpMethod.POST, "/api/productos/**")
+                        .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/productos/**")
+                        .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/productos/**")
+                        .hasRole("ADMINISTRADOR")
+
+                        // ========================================
+                        // PEDIDOS - Permisos por método HTTP
+                        // ========================================
+                        // PATCH /api/pedidos/{id}/estado
+                        // ✅ ADMIN, VENDEDOR, REPARTIDOR pueden cambiar estado
+                        .requestMatchers(HttpMethod.PATCH, "/api/pedidos/*/estado")
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR", "REPARTIDOR")
+
+                        // GET /api/pedidos/**
+                        // ✅ ADMIN, VENDEDOR y REPARTIDOR pueden consultar
+                        .requestMatchers(HttpMethod.GET, "/api/pedidos/**")
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR", "REPARTIDOR")
+
+                        // POST /api/pedidos/**
+                        // ✅ ADMIN y VENDEDOR pueden crear
+                        .requestMatchers(HttpMethod.POST, "/api/pedidos/**")
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR")
+
+                        // PUT /api/pedidos/**
+                        // ✅ Solo ADMIN puede editar completamente
+                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/**")
+                        .hasRole("ADMINISTRADOR")
+
+                        // DELETE /api/pedidos/**
+                        // ✅ Solo ADMIN puede eliminar
+                        .requestMatchers(HttpMethod.DELETE, "/api/pedidos/**")
+                        .hasRole("ADMINISTRADOR")
+
+                        // ========================================
+                        // VISITAS - Permisos por método HTTP
+                        // ========================================
+                        .requestMatchers(HttpMethod.GET, "/api/visitas/**")
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR")
+                        .requestMatchers(HttpMethod.POST, "/api/visitas/**")
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/visitas/**")
+                        .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/visitas/**")
+                        .hasRole("ADMINISTRADOR")
+
+                        // ========================================
+                        // RECURSOS SOLO ADMINISTRADOR
+                        // ========================================
                         .requestMatchers("/api/boletas/**").hasRole("ADMINISTRADOR")
-                        .requestMatchers("/api/clientes/**").hasRole("ADMINISTRADOR")
                         .requestMatchers("/api/detallePedidos/**").hasRole("ADMINISTRADOR")
-                        .requestMatchers("/api/productos/**").hasRole("ADMINISTRADOR")
                         .requestMatchers("/api/vendedores/**").hasRole("ADMINISTRADOR")
 
-                        // ✅ Denegar todo lo demás
+                        // ========================================
+                        // DENEGAR TODO LO DEMÁS
+                        // ========================================
                         .anyRequest().denyAll()
                 )
                 .authenticationProvider(authenticationProvider())
@@ -71,12 +142,31 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200")); // ✅ Tu frontend Angular
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+
+        // Orígenes permitidos
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+
+        // Métodos HTTP permitidos
+        configuration.setAllowedMethods(Arrays.asList(
+                "GET",      // Consultar
+                "POST",     // Crear
+                "PUT",      // Actualizar completo
+                "PATCH",    // Actualizar parcial (cambio de estado)
+                "DELETE",   // Eliminar
+                "OPTIONS"   // Preflight CORS
+        ));
+
+        // Headers permitidos
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setExposedHeaders(Arrays.asList("Authorization")); // ✅ Importante para JWT
+
+        // Headers expuestos al cliente
+        configuration.setExposedHeaders(Arrays.asList("Authorization"));
+
+        // Permitir credenciales (cookies, headers de autorización)
         configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L); // ✅ Cache de preflight por 1 hora
+
+        // Cache de preflight requests por 1 hora
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

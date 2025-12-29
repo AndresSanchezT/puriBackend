@@ -16,14 +16,14 @@ public class DetallePedido {
     @ManyToOne
     @JoinColumn(name = "id_producto")
     private Producto producto;
-    private int cantidad;
+    private Double cantidad;
     private double precioUnitario;
     private Double subtotal;
 
     public DetallePedido() {
     }
 
-    public DetallePedido(Long id, Pedido pedido, Producto producto, int cantidad, double precioUnitario, Double subtotal) {
+    public DetallePedido(Long id, Pedido pedido, Producto producto, Double cantidad, double precioUnitario, Double subtotal) {
         this.id = id;
         this.pedido = pedido;
         this.producto = producto;
@@ -32,11 +32,11 @@ public class DetallePedido {
         this.subtotal = subtotal;
     }
 
-    public int getCantidad() {
+    public Double getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(int cantidad) {
+    public void setCantidad(Double cantidad) {
         this.cantidad = cantidad;
     }
 
