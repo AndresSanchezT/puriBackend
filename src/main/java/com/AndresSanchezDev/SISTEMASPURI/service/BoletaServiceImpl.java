@@ -11,7 +11,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +19,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 public class BoletaServiceImpl implements BoletaService {
@@ -194,13 +193,15 @@ public class BoletaServiceImpl implements BoletaService {
         parametros.put("subtotal", BigDecimal.valueOf(boleta.getSubtotal()));
         parametros.put("igv", BigDecimal.valueOf(boleta.getIgv()));
 
-        // ✅ Verificar si algún producto tiene unidad de medida "KGR"
-        boolean tieneProductoKGR = boleta.getPedido().getDetallePedidos().stream()
+        // ✅ Verificar si algún producto tiene unidad de medida "KGR" o "MLD"
+        boolean tieneProductoKGRoMLD = boleta.getPedido().getDetallePedidos().stream()
                 .anyMatch(detalle -> detalle.getProducto() != null &&
-                        "KGR".equals(detalle.getProducto().getUnidadMedida()));
+                        ("KGR".equals(detalle.getProducto().getUnidadMedida())
+                                || "MLD".equals(detalle.getProducto().getUnidadMedida())));
+
 
         // Si tiene producto KGR, enviar null, sino enviar el total
-        parametros.put("total", tieneProductoKGR ? null : BigDecimal.valueOf(boleta.getTotal()));
+        parametros.put("total", tieneProductoKGRoMLD ? null : BigDecimal.valueOf(boleta.getTotal()));
 
         // ========== OBSERVACIONES ==========
         String observaciones = boleta.getPedido().getObservaciones();
@@ -254,8 +255,10 @@ public class BoletaServiceImpl implements BoletaService {
             dto.setPrecioUnitario(
                     BigDecimal.valueOf(detalle.getPrecioUnitario())
             );
-            if(detalle.getProducto() != null &&
-                    "KGR".equals(detalle.getProducto().getUnidadMedida())){
+            if (detalle.getProducto() != null &&
+                    ("KGR".equals(detalle.getProducto().getUnidadMedida())
+                            || "MLD".equals(detalle.getProducto().getUnidadMedida()))) {
+
                 dto.setSubtotalDetalle(null);
             } else {
                 dto.setSubtotalDetalle(

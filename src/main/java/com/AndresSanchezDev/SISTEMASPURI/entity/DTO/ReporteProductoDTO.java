@@ -9,15 +9,19 @@ public class ReporteProductoDTO {
     private Double stockActual;
     private Double stockMinimo;
     private String estado;
+    private String unidadMedida; // ⭐ NUEVO
+    private String cantidadesPorPedido;
 
     public ReporteProductoDTO() {}
 
-    public ReporteProductoDTO(String nombreProducto, Double totalProductos, Double stockActual, Double stockMinimo, String estado) {
+    public ReporteProductoDTO(String nombreProducto, Double totalProductos, Double stockActual, Double stockMinimo, String estado, String unidadMedida, String cantidadesPorPedido) {
         this.nombreProducto = nombreProducto;
         this.totalProductos = totalProductos;
         this.stockActual = stockActual;
         this.stockMinimo = stockMinimo;
         this.estado = estado;
+        this.unidadMedida = unidadMedida;
+        this.cantidadesPorPedido=cantidadesPorPedido;
     }
 
     public String getNombreProducto() {
@@ -58,5 +62,21 @@ public class ReporteProductoDTO {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public String getUnidadMedida() {
+        return unidadMedida;
+    }
+
+    public void setUnidadMedida(String unidadMedida) {
+        this.unidadMedida = unidadMedida;
+    }
+
+    public String getCantidadesPorPedido() {
+        return cantidadesPorPedido;
+    }
+
+    public void setCantidadesPorPedido(String cantidadesPorPedido) {
+        this.cantidadesPorPedido = cantidadesPorPedido;
     }
 }

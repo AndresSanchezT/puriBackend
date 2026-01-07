@@ -4,12 +4,12 @@ package com.AndresSanchezDev.SISTEMASPURI;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.util.JRSaver;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.io.FileInputStream;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
@@ -21,17 +21,19 @@ public class SistemaspuriApplication {
 
 		SpringApplication.run(SistemaspuriApplication.class, args);
 
-		InputStream jrxmlStream = new FileInputStream(
-				"src/main/resources/reportes/puri_boleta.jrxml"
-		);
+		InputStream jrxmlStream = SistemaspuriApplication.class
+				.getClassLoader()
+				.getResourceAsStream("reportes/puri_boleta.jrxml");
 
-		JasperReport jasperReport = JasperCompileManager.compileReport(jrxmlStream);
+		if (jrxmlStream == null) {
+			throw new RuntimeException("❌ No se encontró puri_boleta.jrxml en classpath");
+		}
 
-		JRSaver.saveObject(jasperReport,
-				"src/main/resources/reportes/puri_boleta.jasper"
-		);
+		JasperReport jasperReport =
+				JasperCompileManager.compileReport(jrxmlStream);
 
-		System.out.println("✅ Reporte compilado: puri_boleta.jasper");
+		// Opcional: guardar como .jasper en memoria o filesystem temporal
+		System.out.println("✅ Reporte JRXML compilado correctamente");
 	}
 
 }

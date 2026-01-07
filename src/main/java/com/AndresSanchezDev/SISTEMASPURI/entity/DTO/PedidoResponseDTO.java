@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 public class PedidoResponseDTO {
 
     public static class ClienteDTO {
+        private Long id;
         private String nombre;
         private String direccion;
         private String telefono;
@@ -16,9 +17,18 @@ public class PedidoResponseDTO {
         public ClienteDTO() {}
 
         public ClienteDTO(Cliente cliente) {
+            this.id = cliente.getId();
             this.nombre = cliente.getNombreContacto();
             this.direccion = cliente.getDireccion();
             this.telefono = cliente.getTelefono();
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
         }
 
         public String getNombre() {
@@ -47,11 +57,22 @@ public class PedidoResponseDTO {
     }
 
     public static class UsuarioDTO {
+        private Long id;
         private String nombreVendedor;
         public UsuarioDTO() {}
         public UsuarioDTO(Usuario usuario) {
+            this.id = usuario.getId();
             this.nombreVendedor = usuario.getNombre();
         }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
         public String getNombreVendedor() {
             return nombreVendedor;
         }

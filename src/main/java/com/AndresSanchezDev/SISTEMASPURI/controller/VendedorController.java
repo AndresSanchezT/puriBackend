@@ -2,7 +2,9 @@ package com.AndresSanchezDev.SISTEMASPURI.controller;
 
 
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.VendedorStatsDTO;
+import com.AndresSanchezDev.SISTEMASPURI.entity.Usuario;
 import com.AndresSanchezDev.SISTEMASPURI.entity.Vendedor;
+import com.AndresSanchezDev.SISTEMASPURI.service.UsuarioService;
 import com.AndresSanchezDev.SISTEMASPURI.service.VendedorService;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,14 +16,16 @@ import java.util.Optional;
 public class VendedorController {
 
     private final VendedorService vendedorService;
+    private final UsuarioService usuarioService;
 
-    public VendedorController(VendedorService vendedorService) {
+    public VendedorController(VendedorService vendedorService, UsuarioService usuarioService) {
         this.vendedorService = vendedorService;
+        this.usuarioService = usuarioService;
     }
 
     @GetMapping
-    public List<Vendedor> getAll() {
-        return vendedorService.findAll();
+    public List<Usuario> getAll() {
+        return usuarioService.findAll();
     }
 
     @GetMapping("/{id}")

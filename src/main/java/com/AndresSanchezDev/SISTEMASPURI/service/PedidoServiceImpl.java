@@ -128,10 +128,9 @@ public class PedidoServiceImpl implements PedidoService {
         return pedidoRepository.findAll();
     }
 
-
     @Override
     public List<DetalleListaPedidoDTO> findAllDetallesPedido() {
-        return pedidoRepository.listarPedidosMinimos();
+        return pedidoRepository.listarPedidosRegistrados();
     }
 
     @Override

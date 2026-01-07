@@ -34,7 +34,7 @@ public class DataLoader implements CommandLineRunner {
         }
 
         // Crear VENDEDOR
-        if (usuarioRepository.findByUsuario("alocatee").isEmpty()) {
+        if (usuarioRepository.findByUsuario("Alocate").isEmpty()) {
             crearUsuarioVendedor();
         } else {
             System.out.println("⏭️  Usuario vendedor ya existe, omitiendo...");
@@ -83,14 +83,32 @@ public class DataLoader implements CommandLineRunner {
             vendedor.setNombre("Cristian Rodriguez Trujillo");
             vendedor.setCorreo("crt@hotmail.com");
             vendedor.setRol(Rol.VENDEDOR);
-            vendedor.setUsuario("alocatee");
+            vendedor.setUsuario("Alocate");
             vendedor.setTelefono("123456789");
             vendedor.setContrasena(passwordEncoder.encode("alocatee123"));
+
+            Usuario vendedor2 = new Usuario();
+            vendedor2.setNombre("Wilmer Miller Lopez Taipehuaman");
+            vendedor2.setCorreo("wilmerBebita@hotmail.com");
+            vendedor2.setRol(Rol.VENDEDOR);
+            vendedor2.setUsuario("WilmerMapero");
+            vendedor2.setTelefono("123456789");
+            vendedor2.setContrasena(passwordEncoder.encode("luna123"));
+
+            Usuario vendedor3 = new Usuario();
+            vendedor3.setNombre("Alfredo La Beba de Puri");
+            vendedor3.setCorreo("wilmerBebita@hotmail.com");
+            vendedor3.setRol(Rol.VENDEDOR);
+            vendedor3.setUsuario("AlfredoLokita");
+            vendedor3.setTelefono("123456789");
+            vendedor3.setContrasena(passwordEncoder.encode("tubebe123"));
             // Guardar
             usuarioRepository.save(vendedor);
+            usuarioRepository.save(vendedor2);
+            usuarioRepository.save(vendedor3);
 
-            System.out.println("✅ VENDEDOR CREADO:");
-            System.out.println("   👤 Usuario: alocatee");
+            System.out.println("✅ VENDEDORES CREADO:");
+            System.out.println("   👤 Usuarios: Alocatee,WilmerMapero,AlfredoLokita");
             System.out.println("   🔑 Password: alocatee123");
             System.out.println("   📋 Permisos: Accesos Limitados");
 

@@ -31,12 +31,18 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
             WHEN pr.stock_actual <= 0 THEN 'AGOTADO'
             WHEN pr.stock_actual < pr.stock_minimo THEN 'BAJO STOCK'
             ELSE 'OK'
-        END AS estado
+        END AS estado,
+        pr.unidad_medida AS unidadMedida,
+        CASE 
+            WHEN pr.unidad_medida IN ('KGR') 
+            THEN GROUP_CONCAT(dp.cantidad ORDER BY p.id SEPARATOR ',')
+            ELSE NULL
+        END AS cantidadesPorPedido
     FROM pedido p
     INNER JOIN detalle_pedido dp ON p.id = dp.id_pedido
     INNER JOIN producto pr ON dp.id_producto = pr.id
     WHERE p.estado = 'registrado'
-    GROUP BY pr.id, pr.nombre, pr.stock_actual, pr.stock_minimo
+    GROUP BY pr.id, pr.nombre, pr.stock_actual, pr.stock_minimo, pr.unidad_medida
     ORDER BY pr.nombre ASC
 """, nativeQuery = true)
     List<ReporteProductoDTO> reporteProductosRegistrados();
@@ -52,8 +58,9 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
         p.total AS total
     FROM Pedido p 
     JOIN p.cliente c
+    WHERE p.estado = 'registrado'
 """)
-    List<DetalleListaPedidoDTO> listarPedidosMinimos();
+    List<DetalleListaPedidoDTO> listarPedidosRegistrados();
 
     @Query("""
     SELECT 
@@ -87,4 +94,6 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     // Verificar si el pedido existe y obtener su estado actual
     @Query("SELECT p.estado FROM Pedido p WHERE p.id = :id")
     String obtenerEstadoPedido(@Param("id") Long id);
+
+
 }

@@ -39,6 +39,7 @@ public class BoletaController {
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentLength(pdfBytes.length);
             headers.setContentDisposition(
                     ContentDisposition.inline()
                             .filename("boleta_" + boletaId + ".pdf")

@@ -12,10 +12,9 @@
               bottomMargin="10"
               uuid="a1b2c3d4-e5f6-7890-1234-567890abcdef">
 
-    <!-- ================= PROPIEDADES ================= -->
     <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 
-    <!-- ================= PARÁMETROS ================= -->
+    <!-- PARÁMETROS -->
     <parameter name="logo" class="java.io.InputStream"/>
     <parameter name="ruc" class="java.lang.String"/>
     <parameter name="codigo" class="java.lang.String"/>
@@ -32,7 +31,7 @@
     <parameter name="total" class="java.math.BigDecimal"/>
     <parameter name="observaciones" class="java.lang.String"/>
 
-    <!-- ================= CAMPOS ================= -->
+    <!-- CAMPOS -->
     <field name="codigoProducto" class="java.lang.String"/>
     <field name="nombreProducto" class="java.lang.String"/>
     <field name="unidadMedida" class="java.lang.String"/>
@@ -40,10 +39,9 @@
     <field name="precioUnitario" class="java.math.BigDecimal"/>
     <field name="subtotalDetalle" class="java.math.BigDecimal"/>
 
-    <!-- ================= TITLE ================= -->
+    <!-- TITLE -->
     <title>
         <band height="70" splitType="Prevent">
-
             <image>
                 <reportElement x="10" y="5" width="90" height="65"/>
                 <imageExpression><![CDATA[$P{logo}]]></imageExpression>
@@ -52,14 +50,15 @@
             <staticText>
                 <reportElement x="85" y="8" width="280" height="12" forecolor="#1E3A8A"/>
                 <textElement verticalAlignment="Middle" textAlignment="Center">
-                    <font size="9" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="9" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[INVERSIONES]]></text>
             </staticText>
+
             <staticText>
                 <reportElement x="85" y="18" width="280" height="28" forecolor="#1E3A8A"/>
                 <textElement verticalAlignment="Middle" textAlignment="Center">
-                    <font size="22" isBold="true" fontName="Arial"/>
+                    <font fontName="DejaVu Sans" size="22" isBold="true"/> <!-- ✅ Ya tenía -->
                 </textElement>
                 <text><![CDATA[P U R I]]></text>
             </staticText>
@@ -67,7 +66,7 @@
             <staticText>
                 <reportElement x="85" y="46" width="280" height="9" forecolor="#000000"/>
                 <textElement textAlignment="Center">
-                    <font size="7"/>
+                    <font fontName="DejaVu Sans" size="7"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[VENTAS AL POR MAYOR Y MENOR DE EMBUTIDOS, BOLSAS, QUESOS Y MÁS.]]></text>
             </staticText>
@@ -75,7 +74,7 @@
             <staticText>
                 <reportElement x="85" y="55" width="280" height="10" forecolor="#000000"/>
                 <textElement textAlignment="Center">
-                    <font size="7" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="7" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[PEDIDOS AL: 📞 998743711]]></text>
             </staticText>
@@ -87,7 +86,7 @@
             <textField>
                 <reportElement x="405" y="10" width="135" height="16"/>
                 <textElement textAlignment="Center">
-                    <font size="11" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="11" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <textFieldExpression><![CDATA["R.U.C. " + $P{ruc}]]></textFieldExpression>
             </textField>
@@ -95,7 +94,7 @@
             <staticText>
                 <reportElement x="405" y="26" width="135" height="15"/>
                 <textElement textAlignment="Center">
-                    <font size="11" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="11" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[BOLETA DE VENTA]]></text>
             </staticText>
@@ -103,21 +102,20 @@
             <textField>
                 <reportElement x="405" y="41" width="135" height="14"/>
                 <textElement textAlignment="Center">
-                    <font size="10" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="10" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <textFieldExpression><![CDATA[$P{codigo}]]></textFieldExpression>
             </textField>
+
             <line>
                 <reportElement x="0" y="68" width="554" height="1"/>
             </line>
-
         </band>
     </title>
 
-    <!-- ================= PAGE HEADER ================= -->
+    <!-- PAGE HEADER -->
     <pageHeader>
         <band height="48" splitType="Prevent">
-
             <rectangle>
                 <reportElement x="0" y="0" width="554" height="45" backcolor="#FFFFFF"/>
             </rectangle>
@@ -125,7 +123,7 @@
             <staticText>
                 <reportElement x="10" y="3" width="60" height="13"/>
                 <textElement verticalAlignment="Middle">
-                    <font size="9" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="9" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[CLIENTE:]]></text>
             </staticText>
@@ -133,7 +131,7 @@
             <textField>
                 <reportElement x="70" y="3" width="475" height="13"/>
                 <textElement verticalAlignment="Middle">
-                    <font size="9"/>
+                    <font fontName="DejaVu Sans" size="9"/> <!-- ✅ -->
                 </textElement>
                 <textFieldExpression><![CDATA[$P{nombreCliente}]]></textFieldExpression>
             </textField>
@@ -141,7 +139,7 @@
             <staticText>
                 <reportElement x="10" y="16" width="60" height="13"/>
                 <textElement verticalAlignment="Middle">
-                    <font size="9" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="9" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[DIRECCIÓN:]]></text>
             </staticText>
@@ -149,7 +147,7 @@
             <textField>
                 <reportElement x="70" y="16" width="280" height="13"/>
                 <textElement verticalAlignment="Middle">
-                    <font size="9"/>
+                    <font fontName="DejaVu Sans" size="9"/> <!-- ✅ -->
                 </textElement>
                 <textFieldExpression><![CDATA[$P{direccionCliente}]]></textFieldExpression>
             </textField>
@@ -157,114 +155,98 @@
             <staticText>
                 <reportElement x="10" y="29" width="60" height="13"/>
                 <textElement verticalAlignment="Middle">
-                    <font size="9" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="9" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[RUC:]]></text>
             </staticText>
 
-            <!-- Etiqueta FECHA -->
             <staticText>
                 <reportElement x="410" y="29" width="45" height="13"/>
                 <textElement verticalAlignment="Middle">
-                    <font size="9" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="9" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[FECHA:]]></text>
             </staticText>
 
-            <!-- Tablero de fecha: Headers -->
+            <!-- Tablero de fecha -->
             <rectangle>
                 <reportElement x="455" y="20" width="32" height="11" backcolor="#1E3A8A"/>
-                <graphicElement>
-                    <pen lineWidth="0.5"/>
-                </graphicElement>
+                <graphicElement><pen lineWidth="0.5"/></graphicElement>
             </rectangle>
             <staticText>
                 <reportElement x="455" y="20" width="32" height="11" forecolor="#FFFFFF"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="7" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="7" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[DÍA]]></text>
             </staticText>
 
             <rectangle>
                 <reportElement x="487" y="20" width="32" height="11" backcolor="#1E3A8A"/>
-                <graphicElement>
-                    <pen lineWidth="0.5"/>
-                </graphicElement>
+                <graphicElement><pen lineWidth="0.5"/></graphicElement>
             </rectangle>
             <staticText>
                 <reportElement x="487" y="20" width="32" height="11" forecolor="#FFFFFF"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="7" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="7" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[MES]]></text>
             </staticText>
 
             <rectangle>
                 <reportElement x="519" y="20" width="32" height="11" backcolor="#1E3A8A"/>
-                <graphicElement>
-                    <pen lineWidth="0.5"/>
-                </graphicElement>
+                <graphicElement><pen lineWidth="0.5"/></graphicElement>
             </rectangle>
             <staticText>
                 <reportElement x="519" y="20" width="32" height="11" forecolor="#FFFFFF"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="7" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="7" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[AÑO]]></text>
             </staticText>
 
-            <!-- Tablero de fecha: Valores -->
+            <!-- Valores de fecha -->
             <rectangle>
                 <reportElement x="455" y="31" width="32" height="11" backcolor="#FFFFFF"/>
-                <graphicElement>
-                    <pen lineWidth="0.5"/>
-                </graphicElement>
+                <graphicElement><pen lineWidth="0.5"/></graphicElement>
             </rectangle>
             <textField>
                 <reportElement x="455" y="31" width="32" height="11"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="8" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="8" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <textFieldExpression><![CDATA[$P{fechaEmision}.substring(0, 2)]]></textFieldExpression>
             </textField>
 
             <rectangle>
                 <reportElement x="487" y="31" width="32" height="11" backcolor="#FFFFFF"/>
-                <graphicElement>
-                    <pen lineWidth="0.5"/>
-                </graphicElement>
+                <graphicElement><pen lineWidth="0.5"/></graphicElement>
             </rectangle>
             <textField>
                 <reportElement x="487" y="31" width="32" height="11"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="8" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="8" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <textFieldExpression><![CDATA[$P{fechaEmision}.substring(3, 5)]]></textFieldExpression>
             </textField>
 
             <rectangle>
                 <reportElement x="519" y="31" width="32" height="11" backcolor="#FFFFFF"/>
-                <graphicElement>
-                    <pen lineWidth="0.5"/>
-                </graphicElement>
+                <graphicElement><pen lineWidth="0.5"/></graphicElement>
             </rectangle>
             <textField>
                 <reportElement x="519" y="31" width="32" height="11"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="8" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="8" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <textFieldExpression><![CDATA[$P{fechaEmision}.substring(6, 10)]]></textFieldExpression>
             </textField>
-
         </band>
     </pageHeader>
 
-
-    <!-- ================= COLUMN HEADER ================= -->
+    <!-- COLUMN HEADER -->
     <columnHeader>
         <band height="22" splitType="Prevent">
-
             <rectangle>
                 <reportElement x="0" y="0" width="554" height="22" backcolor="#1E3A8A"/>
             </rectangle>
@@ -272,7 +254,7 @@
             <staticText>
                 <reportElement x="5" y="0" width="35" height="22" forecolor="#FFFFFF"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="9" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="9" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[CANT.]]></text>
             </staticText>
@@ -280,7 +262,7 @@
             <staticText>
                 <reportElement x="40" y="0" width="50" height="22" forecolor="#FFFFFF"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="9" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="9" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[U.M]]></text>
             </staticText>
@@ -288,7 +270,7 @@
             <staticText>
                 <reportElement x="90" y="0" width="310" height="22" forecolor="#FFFFFF"/>
                 <textElement verticalAlignment="Middle" textAlignment="Center">
-                    <font size="9" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="9" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[DESCRIPCIÓN]]></text>
             </staticText>
@@ -296,7 +278,7 @@
             <staticText>
                 <reportElement x="400" y="0" width="70" height="22" forecolor="#FFFFFF"/>
                 <textElement textAlignment="Right" verticalAlignment="Middle">
-                    <font size="9" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="9" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[P. UNIT.]]></text>
             </staticText>
@@ -304,42 +286,34 @@
             <staticText>
                 <reportElement x="470" y="0" width="75" height="22" forecolor="#FFFFFF"/>
                 <textElement textAlignment="Right" verticalAlignment="Middle">
-                    <font size="9" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="9" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[IMPORTE]]></text>
             </staticText>
-
         </band>
     </columnHeader>
 
-
-    <!-- ================= DETAIL ================= -->
+    <!-- DETAIL -->
     <detail>
         <band height="18">
-
-            <!-- Rectángulo de fondo con color intercalado -->
             <rectangle>
                 <reportElement x="0" y="0" width="554" height="18" backcolor="#E0F2FE">
                     <printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></printWhenExpression>
                 </reportElement>
-                <graphicElement>
-                    <pen lineWidth="0"/>
-                </graphicElement>
+                <graphicElement><pen lineWidth="0"/></graphicElement>
             </rectangle>
 
             <rectangle>
                 <reportElement x="0" y="0" width="554" height="18" backcolor="#FFFFFF">
                     <printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 != 0]]></printWhenExpression>
                 </reportElement>
-                <graphicElement>
-                    <pen lineWidth="0"/>
-                </graphicElement>
+                <graphicElement><pen lineWidth="0"/></graphicElement>
             </rectangle>
 
             <textField isBlankWhenNull="true">
                 <reportElement x="5" y="0" width="35" height="17"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="9"/>
+                    <font fontName="DejaVu Sans" size="9"/> <!-- ✅ -->
                 </textElement>
                 <textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
             </textField>
@@ -347,7 +321,7 @@
             <textField isBlankWhenNull="true">
                 <reportElement x="40" y="0" width="50" height="17"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="9"/>
+                    <font fontName="DejaVu Sans" size="9"/> <!-- ✅ -->
                 </textElement>
                 <textFieldExpression><![CDATA[$F{unidadMedida}]]></textFieldExpression>
             </textField>
@@ -355,7 +329,7 @@
             <textField isBlankWhenNull="true">
                 <reportElement x="90" y="0" width="310" height="17"/>
                 <textElement verticalAlignment="Middle">
-                    <font size="9"/>
+                    <font fontName="DejaVu Sans" size="9"/> <!-- ✅ -->
                 </textElement>
                 <textFieldExpression><![CDATA[$F{nombreProducto}]]></textFieldExpression>
             </textField>
@@ -363,7 +337,7 @@
             <textField isBlankWhenNull="true">
                 <reportElement x="400" y="0" width="70" height="17"/>
                 <textElement textAlignment="Right" verticalAlignment="Middle">
-                    <font size="9"/>
+                    <font fontName="DejaVu Sans" size="9"/> <!-- ✅ -->
                 </textElement>
                 <textFieldExpression><![CDATA[$F{precioUnitario}]]></textFieldExpression>
             </textField>
@@ -371,19 +345,16 @@
             <textField isBlankWhenNull="true">
                 <reportElement x="470" y="0" width="75" height="17"/>
                 <textElement textAlignment="Right" verticalAlignment="Middle">
-                    <font size="9"/>
+                    <font fontName="DejaVu Sans" size="9"/> <!-- ✅ -->
                 </textElement>
                 <textFieldExpression><![CDATA[$F{subtotalDetalle}]]></textFieldExpression>
             </textField>
-
         </band>
     </detail>
 
-
-    <!-- ================= FOOTER ================= -->
+    <!-- FOOTER -->
     <lastPageFooter>
         <band height="55" splitType="Prevent">
-
             <rectangle>
                 <reportElement x="0" y="15" width="555" height="18" backcolor="#FFFFFF"/>
             </rectangle>
@@ -391,7 +362,7 @@
             <staticText>
                 <reportElement x="10" y="15" width="110" height="18"/>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
-                    <font size="10" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="10" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[OBSERVACION:]]></text>
             </staticText>
@@ -399,7 +370,7 @@
             <staticText>
                 <reportElement x="320" y="15" width="130" height="18"/>
                 <textElement textAlignment="Right" verticalAlignment="Middle">
-                    <font size="10" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="10" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[MONTO TOTAL S/.]]></text>
             </staticText>
@@ -407,7 +378,7 @@
             <textField isBlankWhenNull="true">
                 <reportElement x="450" y="15" width="95" height="18"/>
                 <textElement textAlignment="Right" verticalAlignment="Middle">
-                    <font size="11" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="11" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <textFieldExpression><![CDATA[$P{total}]]></textFieldExpression>
             </textField>
@@ -415,11 +386,10 @@
             <staticText>
                 <reportElement x="0" y="38" width="555" height="14"/>
                 <textElement textAlignment="Center">
-                    <font size="9" isBold="true"/>
+                    <font fontName="DejaVu Sans" size="9" isBold="true"/> <!-- ✅ -->
                 </textElement>
                 <text><![CDATA[¡GRACIAS POR SU COMPRA!]]></text>
             </staticText>
-
         </band>
     </lastPageFooter>
 
