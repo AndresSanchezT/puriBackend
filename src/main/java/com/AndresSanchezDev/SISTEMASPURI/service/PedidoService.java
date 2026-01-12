@@ -15,6 +15,8 @@ public interface PedidoService {
 
     Optional<Pedido> findById(Long id);
 
+    Optional<Pedido> obtenerPorId(Long id);
+
     Pedido save(Pedido pedido);
 
     Pedido update(Long id, Pedido pedidoNuevo);

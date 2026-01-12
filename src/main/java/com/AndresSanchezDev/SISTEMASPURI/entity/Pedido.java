@@ -29,10 +29,14 @@ public class Pedido {
     private String observaciones;
     @OneToMany(mappedBy = "pedido",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<DetallePedido> detallePedidos = new ArrayList<>();
+    private Double yape;
+    private Double plin;
+    private Double credito;
+    private Double efectivo;
 
     public Pedido() {}
 
-    public Pedido(Long id, Usuario vendedor, Cliente cliente, Visita visita, LocalDateTime fechaPedido, Double subtotal, Double igv, Double total, String estado, String observaciones, List<DetallePedido> detallePedidos) {
+    public Pedido(Long id, Usuario vendedor, Cliente cliente, Visita visita, LocalDateTime fechaPedido, Double subtotal, Double igv, Double total, String estado, String observaciones, List<DetallePedido> detallePedidos, Double yape, Double plin, Double credito, Double efectivo) {
         this.id = id;
         this.vendedor = vendedor;
         this.cliente = cliente;
@@ -44,6 +48,10 @@ public class Pedido {
         this.estado = estado;
         this.observaciones = observaciones;
         this.detallePedidos = detallePedidos;
+        this.yape = yape;
+        this.plin = plin;
+        this.credito = credito;
+        this.efectivo = efectivo;
     }
 
     public Long getId() {
@@ -132,5 +140,37 @@ public class Pedido {
 
     public void setDetallePedidos(List<DetallePedido> detallePedidos) {
         this.detallePedidos = detallePedidos;
+    }
+
+    public Double getYape() {
+        return yape;
+    }
+
+    public void setYape(Double yape) {
+        this.yape = yape;
+    }
+
+    public Double getPlin() {
+        return plin;
+    }
+
+    public void setPlin(Double plin) {
+        this.plin = plin;
+    }
+
+    public Double getCredito() {
+        return credito;
+    }
+
+    public void setCredito(Double credito) {
+        this.credito = credito;
+    }
+
+    public Double getEfectivo() {
+        return efectivo;
+    }
+
+    public void setEfectivo(Double efectivo) {
+        this.efectivo = efectivo;
     }
 }

@@ -152,7 +152,11 @@ public class PedidoServiceImpl implements PedidoService {
         pedidoDB.setSubtotal(pedidoNuevo.getSubtotal());
         pedidoDB.setIgv(pedidoNuevo.getIgv());
         pedidoDB.setTotal(pedidoNuevo.getTotal());
-
+        pedidoDB.setTotal(pedidoNuevo.getTotal());
+        pedidoDB.setYape(pedidoNuevo.getYape());
+        pedidoDB.setPlin(pedidoNuevo.getPlin());
+        pedidoDB.setEfectivo(pedidoNuevo.getEfectivo());
+        pedidoDB.setCredito(pedidoNuevo.getCredito());
         // --- DETALLES (TU LÓGICA YA CORRECTA) ---
         Map<Long, DetallePedido> existentes = pedidoDB.getDetallePedidos().stream()
                 .filter(d -> d.getId() != null)
@@ -184,7 +188,7 @@ public class PedidoServiceImpl implements PedidoService {
                     boleta.setSubtotal(pedidoDB.getSubtotal());
                     boleta.setIgv(pedidoDB.getIgv());
                     boleta.setTotal(pedidoDB.getTotal());
-                    boleta.setFechaRegistro(LocalDateTime.now());
+                    boleta.setFechaActualizacion(LocalDateTime.now());
                 });
 
         return pedidoRepository.save(pedidoDB);
@@ -208,6 +212,10 @@ public class PedidoServiceImpl implements PedidoService {
     @Override
     public List<ReporteProductoDTO> reporteProductosRegistrados() {
         return pedidoRepository.reporteProductosRegistrados();
+    }
+    @Override
+    public Optional<Pedido> obtenerPorId(Long id) {
+        return pedidoRepository.findById(id);
     }
     @Override
     public List<ItemPedidoDTO> validarStock(List<ItemPedidoDTO> items) {

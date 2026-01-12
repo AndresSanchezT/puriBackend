@@ -230,7 +230,7 @@ public class BoletaServiceImpl implements BoletaService {
 
     private List<DetalleBoletaDTO> prepararDetalles(Boleta boleta) {
 
-        final int FILAS_FIJAS = 11;
+        final int FILAS_FIJAS = 15;
 
         List<DetallePedido> detallesPedido =
                 boleta.getPedido() != null

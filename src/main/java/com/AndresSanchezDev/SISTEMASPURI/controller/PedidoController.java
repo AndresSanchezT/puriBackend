@@ -44,6 +44,11 @@ public class PedidoController {
         return pedidoService.obtenerPedidoCompleto(id);
     }
 
+    @GetMapping("/{id}/completo")
+    public Optional<Pedido> obtenerPorId(@PathVariable Long id) {
+        return pedidoService.obtenerPorId(id);
+    }
+
     @GetMapping("/hoy")
     public List<Pedido> countPedidosHoy() {
         return pedidoService.pedidosHoy();

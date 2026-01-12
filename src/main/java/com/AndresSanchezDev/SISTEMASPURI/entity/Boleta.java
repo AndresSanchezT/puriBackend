@@ -30,11 +30,12 @@ public class Boleta {
     private LocalDateTime fechaAnulacion;
     private int idAuxiliar;
     private LocalDateTime fechaRegistro;
+    private LocalDateTime fechaActualizacion;
 
     public Boleta() {
     }
 
-    public Boleta(LocalDateTime fechaEmision, Long id, String codigo, Pedido pedido, Usuario vendedor, Cliente cliente, Double subtotal, Double igv, Double total, String estado, String motivoAnulacion, LocalDateTime fechaAnulacion, int idAuxiliar, LocalDateTime fechaRegistro) {
+    public Boleta(LocalDateTime fechaEmision, Long id, String codigo, Pedido pedido, Usuario vendedor, Cliente cliente, Double subtotal, Double igv, Double total, String estado, String motivoAnulacion, LocalDateTime fechaAnulacion, int idAuxiliar, LocalDateTime fechaRegistro, LocalDateTime fechaActualizacion) {
         this.fechaEmision = fechaEmision;
         this.id = id;
         this.codigo = codigo;
@@ -49,6 +50,7 @@ public class Boleta {
         this.fechaAnulacion = fechaAnulacion;
         this.idAuxiliar = idAuxiliar;
         this.fechaRegistro = fechaRegistro;
+        this.fechaActualizacion = fechaActualizacion;
     }
 
     public Long getId() {
@@ -161,5 +163,13 @@ public class Boleta {
 
     public void setFechaRegistro(LocalDateTime fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
+    }
+
+    public LocalDateTime getFechaActualizacion() {
+        return fechaActualizacion;
+    }
+
+    public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
+        this.fechaActualizacion = fechaActualizacion;
     }
 }

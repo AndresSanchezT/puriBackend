@@ -95,5 +95,4 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     @Query("SELECT p.estado FROM Pedido p WHERE p.id = :id")
     String obtenerEstadoPedido(@Param("id") Long id);
 
-
 }
