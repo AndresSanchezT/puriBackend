@@ -9,12 +9,28 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
+    // 🔥 Query para sumar efectivo de pedidos entregados hoy por un repartidor
+    @Query("""
+        SELECT COALESCE(SUM(p.efectivo), 0.0)
+        FROM Pedido p
+        WHERE p.estado = 'entregado'
+        AND p.idRepartidor = :idRepartidor
+        AND DATE(p.fechaEntrega) = DATE(:fecha)
+    """)
+    Double sumarEfectivoDelDia(
+            @Param("idRepartidor") Long idRepartidor,
+            @Param("fecha") LocalDateTime fecha
+    );
+
+
     @Query(
             value = "SELECT * FROM pedido p  ORDER BY p.id DESC",
             nativeQuery = true
@@ -90,6 +106,21 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     @Modifying
     @Query("UPDATE Pedido p SET p.estado = :estado WHERE p.id = :id")
     int actualizarEstado(@Param("id") Long id, @Param("estado") String estado);
+
+    @Modifying
+    @Query("""
+        UPDATE Pedido p 
+        SET p.estado = :nuevoEstado, 
+            p.idRepartidor = :idRepartidor,
+            p.fechaEntrega = :fechaEntrega
+        WHERE p.id = :pedidoId
+    """)
+    int actualizarEstadoyRepartidor(
+            @Param("pedidoId") Long pedidoId,
+            @Param("nuevoEstado") String nuevoEstado,
+            @Param("idRepartidor") Long idRepartidor,
+            @Param("fechaEntrega") LocalDateTime fechaEntrega
+    );
 
     // Verificar si el pedido existe y obtener su estado actual
     @Query("SELECT p.estado FROM Pedido p WHERE p.id = :id")

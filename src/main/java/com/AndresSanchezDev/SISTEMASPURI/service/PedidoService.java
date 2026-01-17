@@ -2,6 +2,7 @@ package com.AndresSanchezDev.SISTEMASPURI.service;
 
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.*;
 import com.AndresSanchezDev.SISTEMASPURI.entity.Pedido;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +38,10 @@ public interface PedidoService {
 
     void cambiarEstado(Long pedidoId, CambiarEstadoPedidoDTO dto);
 
+    void actualizarEstadoyRepartidor(Long id, CambiarEstadoPedidoDTO dto);
+
     void validarTransicionEstado(String estadoActual, String nuevoEstado);
-     // void registrarAnulacion(Long pedidoId, String motivo);
+    // void registrarAnulacion(Long pedidoId, String motivo);
+
+    Double obtenerEfectivoDelDia(Long idRepartidor);
 }

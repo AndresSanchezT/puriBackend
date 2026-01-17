@@ -2,13 +2,15 @@ package com.AndresSanchezDev.SISTEMASPURI.entity.DTO;
 
 public class CambiarEstadoPedidoDTO {
     private String nuevoEstado;
-    private String motivoAnulacion; // Opcional, para cuando se anule
+    private String motivoAnulacion;
+    private Long idRepartidor;// Opcional, para cuando se anule
 
     public CambiarEstadoPedidoDTO() {}
 
-    public CambiarEstadoPedidoDTO(String nuevoEstado, String motivoAnulacion) {
+    public CambiarEstadoPedidoDTO(String nuevoEstado, String motivoAnulacion,Long idRepartidor) {
         this.nuevoEstado = nuevoEstado;
         this.motivoAnulacion = motivoAnulacion;
+        this.idRepartidor = idRepartidor;
     }
 
     // Getters y Setters
@@ -26,5 +28,13 @@ public class CambiarEstadoPedidoDTO {
 
     public void setMotivoAnulacion(String motivoAnulacion) {
         this.motivoAnulacion = motivoAnulacion;
+    }
+
+    public Long getIdRepartidor() {
+        return idRepartidor;
+    }
+
+    public void setIdRepartidor(Long idRepartidor) {
+        this.idRepartidor = idRepartidor;
     }
 }

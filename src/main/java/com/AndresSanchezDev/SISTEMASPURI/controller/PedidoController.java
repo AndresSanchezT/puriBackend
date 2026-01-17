@@ -145,4 +145,60 @@ public class PedidoController {
             return ResponseEntity.internalServerError().body(error);
         }
     }
+
+    @PatchMapping("/{id}/estado-movil")
+    public ResponseEntity<?> cambiarEstadoyRepartidor(
+            @PathVariable Long id,
+            @RequestBody CambiarEstadoPedidoDTO dto) {
+        try {
+            pedidoService.actualizarEstadoyRepartidor(id, dto);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Estado actualizado y repartidor asignado correctamente");
+            response.put("nuevoEstado", dto.getNuevoEstado());
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+
+        } catch (IllegalStateException e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(409).body(error); // 409 Conflict
+
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", "Error al actualizar el estado del pedido");
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+    @GetMapping("/efectivo-del-dia/{idRepartidor}")
+    public ResponseEntity<Map<String, Object>> obtenerEfectivoDelDia(
+            @PathVariable Long idRepartidor) {
+        try {
+            Double efectivo = pedidoService.obtenerEfectivoDelDia(idRepartidor);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("idRepartidor", idRepartidor);
+            response.put("efectivo", efectivo);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", "Error al obtener efectivo del día");
+            error.put("efectivo", 0.0);
+
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
 }

@@ -19,9 +19,11 @@ public class Pedido {
     @ManyToOne
     @JoinColumn(name = "id_cliente")
     private Cliente cliente;
+    private Long idRepartidor;
     @OneToOne
     private Visita visita;
     private LocalDateTime fechaPedido;
+    private LocalDateTime fechaEntrega;
     private Double subtotal;
     private Double igv;
     private Double total;
@@ -36,12 +38,14 @@ public class Pedido {
 
     public Pedido() {}
 
-    public Pedido(Long id, Usuario vendedor, Cliente cliente, Visita visita, LocalDateTime fechaPedido, Double subtotal, Double igv, Double total, String estado, String observaciones, List<DetallePedido> detallePedidos, Double yape, Double plin, Double credito, Double efectivo) {
+    public Pedido(Long id, Usuario vendedor, Cliente cliente, Long idRepartidor, Visita visita, LocalDateTime fechaPedido, LocalDateTime fechaEntrega, Double subtotal, Double igv, Double total, String estado, String observaciones, List<DetallePedido> detallePedidos, Double yape, Double plin, Double credito, Double efectivo) {
         this.id = id;
         this.vendedor = vendedor;
         this.cliente = cliente;
+        this.idRepartidor = idRepartidor;
         this.visita = visita;
         this.fechaPedido = fechaPedido;
+        this.fechaEntrega = fechaEntrega;
         this.subtotal = subtotal;
         this.igv = igv;
         this.total = total;
@@ -78,6 +82,14 @@ public class Pedido {
         this.cliente = cliente;
     }
 
+    public Long getIdRepartidor() {
+        return idRepartidor;
+    }
+
+    public void setIdRepartidor(Long idRepartidor) {
+        this.idRepartidor = idRepartidor;
+    }
+
     public Visita getVisita() {
         return visita;
     }
@@ -92,6 +104,14 @@ public class Pedido {
 
     public void setFechaPedido(LocalDateTime fechaPedido) {
         this.fechaPedido = fechaPedido;
+    }
+
+    public LocalDateTime getFechaEntrega() {
+        return fechaEntrega;
+    }
+
+    public void setFechaEntrega(LocalDateTime fechaEntrega) {
+        this.fechaEntrega = fechaEntrega;
     }
 
     public Double getSubtotal() {

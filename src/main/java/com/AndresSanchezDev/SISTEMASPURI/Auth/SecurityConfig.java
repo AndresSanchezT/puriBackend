@@ -56,11 +56,11 @@ public class SecurityConfig {
                         // ========================================
                         // GET: ADMIN y VENDEDOR pueden consultar
                         .requestMatchers(HttpMethod.GET, "/api/clientes/**")
-                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR")
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR","REPARTIDOR")
 
                         // POST, PUT, DELETE: Solo ADMIN
                         .requestMatchers(HttpMethod.POST, "/api/clientes/**")
-                        .hasRole("ADMINISTRADOR")
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR","REPARTIDOR")
                         .requestMatchers(HttpMethod.PUT, "/api/clientes/**")
                         .hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.DELETE, "/api/clientes/**")
@@ -71,7 +71,7 @@ public class SecurityConfig {
                         // ========================================
                         // GET: ADMIN y VENDEDOR pueden consultar
                         .requestMatchers(HttpMethod.GET, "/api/productos/**")
-                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR")
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR","REPARTIDOR")
 
                         // POST, PUT, DELETE: Solo ADMIN
                         .requestMatchers(HttpMethod.POST, "/api/productos/**")
@@ -86,7 +86,7 @@ public class SecurityConfig {
                         // ========================================
                         // PATCH /api/pedidos/{id}/estado
                         // ✅ ADMIN, VENDEDOR, REPARTIDOR pueden cambiar estado
-                        .requestMatchers(HttpMethod.PATCH, "/api/pedidos/*/estado")
+                        .requestMatchers(HttpMethod.PATCH, "/api/pedidos/*/estado", "/api/pedidos/*/estado-movil")
                         .hasAnyRole("ADMINISTRADOR", "VENDEDOR", "REPARTIDOR")
 
                         // GET /api/pedidos/**
@@ -97,12 +97,12 @@ public class SecurityConfig {
                         // POST /api/pedidos/**
                         // ✅ ADMIN y VENDEDOR pueden crear
                         .requestMatchers(HttpMethod.POST, "/api/pedidos/**")
-                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR")
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR","REPARTIDOR")
 
                         // PUT /api/pedidos/**
                         // ✅ Solo ADMIN puede editar completamente
                         .requestMatchers(HttpMethod.PUT, "/api/pedidos/**")
-                        .hasRole("ADMINISTRADOR")
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR","REPARTIDOR")
 
                         // DELETE /api/pedidos/**
                         // ✅ Solo ADMIN puede eliminar

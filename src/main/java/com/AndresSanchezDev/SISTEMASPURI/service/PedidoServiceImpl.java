@@ -311,6 +311,43 @@ public class PedidoServiceImpl implements PedidoService {
 //            registrarAnulacion(pedidoId, dto.getMotivoAnulacion());
 //        }
     }
+    @Transactional
+    @Override
+    public void actualizarEstadoyRepartidor(Long pedidoId, CambiarEstadoPedidoDTO dto) {
+        String nuevoEstado = dto.getNuevoEstado().toLowerCase();
+        if (!ESTADOS_VALIDOS.contains(nuevoEstado)) {
+            throw new IllegalArgumentException(
+                    "Estado inválido. Estados permitidos: " + ESTADOS_VALIDOS
+            );
+        }
+        // Obtener estado actual del pedido
+        String estadoActual = pedidoRepository.obtenerEstadoPedido(pedidoId);
+        if (estadoActual == null) {
+            throw new IllegalArgumentException("Pedido no encontrado con ID: " + pedidoId);
+        }
+
+        // Validar transiciones de estado permitidas
+        validarTransicionEstado(estadoActual, nuevoEstado);
+        Long idRepartidor = dto.getIdRepartidor();
+
+        // 🔥 Si el estado es "entregado", guardar la fecha actual
+        LocalDateTime fechaEntrega = "entregado".equals(nuevoEstado)
+                ? LocalDateTime.now()
+                : null;
+
+
+        // Actualizar estado de forma optimizada
+        int filasActualizadas = pedidoRepository.actualizarEstadoyRepartidor(pedidoId, nuevoEstado,idRepartidor,fechaEntrega);
+
+        if (filasActualizadas == 0) {
+            throw new RuntimeException("No se pudo actualizar el estado del pedido");
+        }
+    }
+    @Override
+    public Double obtenerEfectivoDelDia(Long idRepartidor) {
+        LocalDateTime hoy = LocalDateTime.now();
+        return pedidoRepository.sumarEfectivoDelDia(idRepartidor, hoy);
+    }
 
     @Override
     public void validarTransicionEstado(String estadoActual, String nuevoEstado) {
