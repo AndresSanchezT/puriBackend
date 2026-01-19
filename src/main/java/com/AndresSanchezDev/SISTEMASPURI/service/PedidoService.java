@@ -12,7 +12,9 @@ public interface PedidoService {
 
     List<Pedido> findAll();
 
-    List<DetalleListaPedidoDTO> findAllDetallesPedido();
+    List<DetalleListaPedidoDTO> listarTodosPedidosHoy();
+
+    List<DetalleListaPedidoDTO> listarPedidosRegistradosHoy();
 
     Optional<Pedido> findById(Long id);
 

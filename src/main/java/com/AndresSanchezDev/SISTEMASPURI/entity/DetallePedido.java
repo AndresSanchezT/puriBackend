@@ -17,13 +17,13 @@ public class DetallePedido {
     @JoinColumn(name = "id_producto")
     private Producto producto;
     private Double cantidad;
-    private double precioUnitario;
+    private Double precioUnitario;
     private Double subtotal;
 
     public DetallePedido() {
     }
 
-    public DetallePedido(Long id, Pedido pedido, Producto producto, Double cantidad, double precioUnitario, Double subtotal) {
+    public DetallePedido(Long id, Pedido pedido, Producto producto, Double cantidad, Double precioUnitario, Double subtotal) {
         this.id = id;
         this.pedido = pedido;
         this.producto = producto;
@@ -40,11 +40,11 @@ public class DetallePedido {
         this.cantidad = cantidad;
     }
 
-    public double getPrecioUnitario() {
+    public Double getPrecioUnitario() {
         return precioUnitario;
     }
 
-    public void setPrecioUnitario(double precioUnitario) {
+    public void setPrecioUnitario(Double precioUnitario) {
         this.precioUnitario = precioUnitario;
     }
 

@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +33,9 @@ public class PedidoServiceImpl implements PedidoService {
     private ProductoRepository productoRepository;
     @Autowired
     private ProductoFaltanteRepository productoFaltanteRepository;
+
+    // Zona horaria de Perú (constante para reutilizar)
+    private static final ZoneId PERU_ZONE = ZoneId.of("America/Lima");
 
     // Estados válidos del sistema
     private static final List<String> ESTADOS_VALIDOS = Arrays.asList(
@@ -129,8 +134,27 @@ public class PedidoServiceImpl implements PedidoService {
     }
 
     @Override
-    public List<DetalleListaPedidoDTO> findAllDetallesPedido() {
-        return pedidoRepository.listarPedidosRegistrados();
+    public List<DetalleListaPedidoDTO> listarPedidosRegistradosHoy() {
+        // Obtener la fecha de "hoy" en zona horaria de Perú
+        LocalDate hoyPeru = LocalDate.now(PERU_ZONE);
+
+        // Inicio del día: 17/01/2026 00:00:00
+        LocalDateTime inicioDia = hoyPeru.atStartOfDay();
+
+        // Fin del día: 18/01/2026 00:00:00 (exclusivo)
+        LocalDateTime finDia = hoyPeru.plusDays(1).atStartOfDay();
+
+        return pedidoRepository.listarPedidosRegistradosHoyConFechas(inicioDia, finDia);
+    }
+
+    @Override
+    public List<DetalleListaPedidoDTO> listarTodosPedidosHoy() {
+        LocalDate hoyPeru = LocalDate.now(PERU_ZONE);
+
+        LocalDateTime inicioDia = hoyPeru.atStartOfDay();
+        LocalDateTime finDia = hoyPeru.plusDays(1).atStartOfDay();
+
+        return pedidoRepository.listarTodosPedidosHoyConFechas(inicioDia, finDia);
     }
 
     @Override

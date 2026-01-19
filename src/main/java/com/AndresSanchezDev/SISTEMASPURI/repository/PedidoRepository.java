@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
-    // 🔥 Query para sumar efectivo de pedidos entregados hoy por un repartidor
+
     @Query("""
         SELECT COALESCE(SUM(p.efectivo), 0.0)
         FROM Pedido p
@@ -30,9 +30,8 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
             @Param("fecha") LocalDateTime fecha
     );
 
-
     @Query(
-            value = "SELECT * FROM pedido p  ORDER BY p.id DESC",
+            value = "SELECT * FROM pedido p ORDER BY p.id DESC",
             nativeQuery = true
     )
     List<Pedido> pedidosHoy();
@@ -63,7 +62,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 """, nativeQuery = true)
     List<ReporteProductoDTO> reporteProductosRegistrados();
 
-
+    // 🔥 NUEVO: Query que acepta rango de fechas (00:00 - 23:59 hora Perú)
     @Query("""
     SELECT 
         p.id as id,
@@ -75,8 +74,34 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     FROM Pedido p 
     JOIN p.cliente c
     WHERE p.estado = 'registrado'
+    AND p.fechaPedido >= :inicioDia
+    AND p.fechaPedido < :finDia
+    ORDER BY p.fechaPedido DESC
 """)
-    List<DetalleListaPedidoDTO> listarPedidosRegistrados();
+    List<DetalleListaPedidoDTO> listarPedidosRegistradosHoyConFechas(
+            @Param("inicioDia") LocalDateTime inicioDia,
+            @Param("finDia") LocalDateTime finDia
+    );
+
+    // 🔥 NUEVO: Query para admin que acepta rango de fechas
+    @Query("""
+    SELECT 
+        p.id as id,
+        c.nombreContacto AS nombreCliente,
+        c.direccion AS direccion,
+        p.estado AS estado,
+        c.tieneCredito AS tieneCredito,
+        p.total AS total
+    FROM Pedido p 
+    JOIN p.cliente c
+    WHERE p.fechaPedido >= :inicioDia
+    AND p.fechaPedido < :finDia
+    ORDER BY p.fechaPedido DESC
+""")
+    List<DetalleListaPedidoDTO> listarTodosPedidosHoyConFechas(
+            @Param("inicioDia") LocalDateTime inicioDia,
+            @Param("finDia") LocalDateTime finDia
+    );
 
     @Query("""
     SELECT 
@@ -92,7 +117,6 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 """)
     Optional<DetalleListaPedidoDTO> findDetallePedidoMinimosById(@Param("id") Long id);
 
-
     @Query("SELECT DISTINCT p FROM Pedido p " +
             "LEFT JOIN FETCH p.cliente " +
             "LEFT JOIN FETCH p.vendedor " +
@@ -102,7 +126,6 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
             "WHERE p.id = :id")
     Optional<PedidoResponseDTO.PedidoDTO> obtenerDetallesPedidoCompletoPorId(@Param("id") Long id);
 
-    // Query optimizada que solo actualiza el estado sin cargar toda la entidad
     @Modifying
     @Query("UPDATE Pedido p SET p.estado = :estado WHERE p.id = :id")
     int actualizarEstado(@Param("id") Long id, @Param("estado") String estado);
@@ -122,8 +145,6 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
             @Param("fechaEntrega") LocalDateTime fechaEntrega
     );
 
-    // Verificar si el pedido existe y obtener su estado actual
     @Query("SELECT p.estado FROM Pedido p WHERE p.id = :id")
     String obtenerEstadoPedido(@Param("id") Long id);
-
 }

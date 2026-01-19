@@ -35,8 +35,12 @@ public class PedidoController {
     }
 
     @GetMapping("/all-mobile")
-    public List<DetalleListaPedidoDTO> findAllDetallesPedido() {
-        return pedidoService.findAllDetallesPedido();
+    public List<DetalleListaPedidoDTO> listarPedidosRegistradosHoy() {
+        return pedidoService.listarPedidosRegistradosHoy();
+    }
+    @GetMapping("/all-mobile-admin")
+    public List<DetalleListaPedidoDTO> listarTodosPedidosHoy() {
+        return pedidoService.listarTodosPedidosHoy();
     }
 
     @GetMapping("/{id}")
