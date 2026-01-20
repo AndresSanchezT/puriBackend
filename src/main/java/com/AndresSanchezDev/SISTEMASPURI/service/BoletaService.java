@@ -14,6 +14,8 @@ public interface BoletaService {
 
     Optional<Boleta> findById(Long id);
 
+    List<Boleta> obtenerBoletasDeHoyPorEstadoPedido();
+
     Boleta save(Boleta boleta);
 
     void deleteById(Long id);

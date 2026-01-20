@@ -41,6 +41,13 @@ public class BoletaController {
         }
     }
 
+    @GetMapping("/hoy")
+    public ResponseEntity<List<Boleta>> obtenerBoletasDeHoyPorEstadoPedido() {
+
+        List<Boleta> boletas = service.obtenerBoletasDeHoyPorEstadoPedido();
+        return ResponseEntity.ok(boletas);
+    }
+
 //    @GetMapping("/{boletaId}/pdf")
 //    public ResponseEntity<byte[]> generarBoleta(@PathVariable Long boletaId) {
 //        try {

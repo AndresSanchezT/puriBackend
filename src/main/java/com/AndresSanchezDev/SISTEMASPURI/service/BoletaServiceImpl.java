@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,6 +43,7 @@ public class BoletaServiceImpl implements BoletaService {
     // ========== OPTIMIZACIÓN 1: Cachear reportes compilados ==========
     private JasperReport jasperReport;
     private InputStream logoStream;
+    private static final ZoneId PERU_ZONE = ZoneId.of("America/Lima");
 
     @Override
     public List<Boleta> findAll() {
@@ -94,6 +97,46 @@ public class BoletaServiceImpl implements BoletaService {
 
         repository.save(boleta);
         return "Boleta actualizada";
+    }
+
+
+    /**
+     * ✅ Obtener boletas completas de hoy por estado del PEDIDO
+     * Devuelve las boletas tal como findAll(), con todas sus relaciones
+     */
+    @Override
+    public List<Boleta> obtenerBoletasDeHoyPorEstadoPedido() {
+        LocalDate hoyPeru = LocalDate.now(PERU_ZONE);
+        LocalDateTime inicioDia = hoyPeru.atStartOfDay();
+        LocalDateTime finDia = hoyPeru.plusDays(1).atStartOfDay();
+
+        // Paso 1: Obtener IDs únicos
+        List<Long> ids = repository.findBoletaIdsPorRangoFechaPedidoRegistrado(
+                inicioDia, finDia);
+
+        // Paso 2: Cargar boletas completas con todas sus relaciones
+        if (ids.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Boleta> boletas = repository.findBoletasCompletasByIds(ids);
+
+        // Paso 3: Ordenar manualmente ya que IN clause no preserva el orden
+        return ordenarBoletasPorIds(boletas, ids);
+    }
+    /**
+     * ✅ Método auxiliar para ordenar las boletas según el orden de los IDs
+     */
+    private List<Boleta> ordenarBoletasPorIds(List<Boleta> boletas, List<Long> ids) {
+        // Crear un mapa para búsqueda rápida
+        Map<Long, Boleta> boletaMap = boletas.stream()
+                .collect(Collectors.toMap(Boleta::getId, b -> b));
+
+        // Ordenar según el orden de los IDs
+        return ids.stream()
+                .map(boletaMap::get)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
 //    @PostConstruct

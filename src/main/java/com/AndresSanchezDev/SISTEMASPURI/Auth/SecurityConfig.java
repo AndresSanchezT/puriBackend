@@ -21,7 +21,7 @@ import java.util.Arrays;
 
 /**
  * Configuración de seguridad del sistema
- *
+ * <p>
  * ROLES:
  * - ADMINISTRADOR: Acceso total
  * - VENDEDOR: Crear/ver pedidos, visitas, consultar clientes y productos
@@ -52,15 +52,27 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
 
                         // ========================================
+                        // RUTAS ESPECÍFICAS PRIMERO
+                        // ========================================
+                        // Boletas - Ruta específica /hoy PRIMERO
+                        .requestMatchers(HttpMethod.GET, "/api/boletas/hoy")
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR", "REPARTIDOR")
+
+                        // Boletas - Ruta específica /datos
+                        .requestMatchers(HttpMethod.GET, "/api/boletas/*/datos")
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR", "REPARTIDOR")
+
+                        // Pedidos - Rutas específicas de estado PRIMERO
+                        .requestMatchers(HttpMethod.PATCH, "/api/pedidos/*/estado", "/api/pedidos/*/estado-movil")
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR", "REPARTIDOR")
+
+                        // ========================================
                         // CLIENTES - Permisos por método HTTP
                         // ========================================
-                        // GET: ADMIN y VENDEDOR pueden consultar
                         .requestMatchers(HttpMethod.GET, "/api/clientes/**")
-                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR","REPARTIDOR")
-
-                        // POST, PUT, DELETE: Solo ADMIN
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR", "REPARTIDOR")
                         .requestMatchers(HttpMethod.POST, "/api/clientes/**")
-                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR","REPARTIDOR")
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR", "REPARTIDOR")
                         .requestMatchers(HttpMethod.PUT, "/api/clientes/**")
                         .hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.DELETE, "/api/clientes/**")
@@ -69,11 +81,8 @@ public class SecurityConfig {
                         // ========================================
                         // PRODUCTOS - Permisos por método HTTP
                         // ========================================
-                        // GET: ADMIN y VENDEDOR pueden consultar
                         .requestMatchers(HttpMethod.GET, "/api/productos/**")
-                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR","REPARTIDOR")
-
-                        // POST, PUT, DELETE: Solo ADMIN
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR", "REPARTIDOR")
                         .requestMatchers(HttpMethod.POST, "/api/productos/**")
                         .hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.PUT, "/api/productos/**")
@@ -84,28 +93,12 @@ public class SecurityConfig {
                         // ========================================
                         // PEDIDOS - Permisos por método HTTP
                         // ========================================
-                        // PATCH /api/pedidos/{id}/estado
-                        // ✅ ADMIN, VENDEDOR, REPARTIDOR pueden cambiar estado
-                        .requestMatchers(HttpMethod.PATCH, "/api/pedidos/*/estado", "/api/pedidos/*/estado-movil")
-                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR", "REPARTIDOR")
-
-                        // GET /api/pedidos/**
-                        // ✅ ADMIN, VENDEDOR y REPARTIDOR pueden consultar
                         .requestMatchers(HttpMethod.GET, "/api/pedidos/**")
                         .hasAnyRole("ADMINISTRADOR", "VENDEDOR", "REPARTIDOR")
-
-                        // POST /api/pedidos/**
-                        // ✅ ADMIN y VENDEDOR pueden crear
                         .requestMatchers(HttpMethod.POST, "/api/pedidos/**")
-                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR","REPARTIDOR")
-
-                        // PUT /api/pedidos/**
-                        // ✅ Solo ADMIN puede editar completamente
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR", "REPARTIDOR")
                         .requestMatchers(HttpMethod.PUT, "/api/pedidos/**")
-                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR","REPARTIDOR")
-
-                        // DELETE /api/pedidos/**
-                        // ✅ Solo ADMIN puede eliminar
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR", "REPARTIDOR")
                         .requestMatchers(HttpMethod.DELETE, "/api/pedidos/**")
                         .hasRole("ADMINISTRADOR")
 
@@ -122,11 +115,37 @@ public class SecurityConfig {
                         .hasRole("ADMINISTRADOR")
 
                         // ========================================
+                        // BOLETAS - Permisos por método HTTP
+                        // ========================================
+                        .requestMatchers(HttpMethod.GET, "/api/boletas/**")
+                        .hasAnyRole("ADMINISTRADOR", "VENDEDOR", "REPARTIDOR")
+                        .requestMatchers(HttpMethod.POST, "/api/boletas/**")
+                        .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/boletas/**")
+                        .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/boletas/**")
+                        .hasRole("ADMINISTRADOR")
+
+                        // ========================================
                         // RECURSOS SOLO ADMINISTRADOR
                         // ========================================
-                        .requestMatchers("/api/boletas/**").hasRole("ADMINISTRADOR")
-                        .requestMatchers("/api/detallePedidos/**").hasRole("ADMINISTRADOR")
-                        .requestMatchers("/api/vendedores/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.GET, "/api/detallePedidos/**")
+                        .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST, "/api/detallePedidos/**")
+                        .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/detallePedidos/**")
+                        .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/detallePedidos/**")
+                        .hasRole("ADMINISTRADOR")
+
+                        .requestMatchers(HttpMethod.GET, "/api/vendedores/**")
+                        .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST, "/api/vendedores/**")
+                        .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/vendedores/**")
+                        .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/vendedores/**")
+                        .hasRole("ADMINISTRADOR")
 
                         // ========================================
                         // DENEGAR TODO LO DEMÁS
