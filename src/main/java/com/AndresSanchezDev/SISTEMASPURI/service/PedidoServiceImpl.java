@@ -3,12 +3,14 @@ package com.AndresSanchezDev.SISTEMASPURI.service;
 import com.AndresSanchezDev.SISTEMASPURI.entity.*;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.*;
 import com.AndresSanchezDev.SISTEMASPURI.repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,10 +44,31 @@ public class PedidoServiceImpl implements PedidoService {
             "registrado", "entregado", "anulado"
     );
 
+    @Override
+    public boolean verificarPedidoExistente(Long idCliente, String tipoFecha) {
+        // Reutilizar la lógica que ya tienes
+        int diasDesdeHoy = switch (tipoFecha.toUpperCase()) {
+            case "HOY" -> 0;
+            case "MANANA" -> 1;
+            case "PASADO_MANANA" -> 2;
+            default -> 0;
+        };
+
+        LocalDate fecha = LocalDate.now(PERU_ZONE).plusDays(diasDesdeHoy);
+        LocalDateTime inicioDia = fecha.atStartOfDay();
+        LocalDateTime finDia = fecha.plusDays(1).atStartOfDay();
+
+        return pedidoRepository.existePedidoRegistrado(idCliente, inicioDia, finDia);
+    }
+
     @Transactional
     @Override
-    public DetalleListaPedidoDTO registrarPedidoConVisitaYDetalles(Long idCliente, Long idVendedor,
-                                                    Pedido pedidoData, boolean forzarGuardar) {
+    public DetalleListaPedidoDTO registrarPedidoConVisitaYDetalles(
+            Long idCliente,
+            Long idVendedor,
+            Pedido pedidoData,
+            boolean forzarGuardar,
+            TipoFechaPedido tipoFecha) { // ✅ Nuevo parámetro
 
         // 1. Validar stock antes de guardar (NO toca DB)
         List<ItemPedidoDTO> items = pedidoData.getDetallePedidos()
@@ -67,50 +90,48 @@ public class PedidoServiceImpl implements PedidoService {
         Usuario vendedor = usuarioRepository.findById(idVendedor)
                 .orElseThrow(() -> new RuntimeException("Vendedor no encontrado"));
 
-        // 3. Crear visita
-        Visita visita = new Visita();
-        visita.setCliente(cliente);
-        visita.setVendedor(vendedor);
-        visita.setFecha(LocalDateTime.now());
-        visita.setEstado("Pendiente");
-        visita.setObservaciones("Sin observaciones");
-        visitaRepository.save(visita);
+        // ✅ 3. Calcular la fecha según el tipo
+        LocalDateTime fechaPedido = calcularFechaPedido(tipoFecha != null ? tipoFecha : TipoFechaPedido.HOY);
 
-        // 4. Construir pedido
+//        // 4. Crear visita
+//        Visita visita = new Visita();
+//        visita.setCliente(cliente);
+//        visita.setVendedor(vendedor);
+//        visita.setFecha(LocalDateTime.now()); // La visita siempre es ahora
+//        visita.setEstado("Pendiente");
+//        visita.setObservaciones("Sin observaciones");
+//        visitaRepository.save(visita);
+
+        // 5. Construir pedido
         pedidoData.setCliente(cliente);
         pedidoData.setVendedor(vendedor);
-        pedidoData.setVisita(visita);
-        pedidoData.setFechaPedido(LocalDateTime.now());
+//        pedidoData.setVisita(visita);
+        pedidoData.setFechaPedido(fechaPedido); // ✅ Usar la fecha calculada
         pedidoData.setEstado("registrado");
+        pedidoData.setCredito(pedidoData.getTotal());
         pedidoData.setObservaciones(pedidoData.getObservaciones());
 
-//        double subtotal = pedidoData.getDetallePedidos().stream()
-//                .mapToDouble(DetallePedido::getSubtotal)
-//                .sum();
-
-//        pedidoData.setSubtotal(subtotal);
         pedidoData.setIgv(0.0);
-//        pedidoData.setTotal(subtotal + pedidoData.getIgv());
 
         pedidoData.getDetallePedidos().forEach(det -> det.setPedido(pedidoData));
 
         Pedido pedidoGuardado = pedidoRepository.save(pedidoData);
 
-        // 5. Registrar BOLETA
+        // 6. Registrar BOLETA
         Boleta boleta = new Boleta();
         boleta.setCodigo(generarCodigoBoleta());
         boleta.setPedido(pedidoGuardado);
         boleta.setCliente(cliente);
         boleta.setVendedor(vendedor);
-        boleta.setFechaEmision(LocalDateTime.now());
+        boleta.setFechaEmision(fechaPedido); // ✅ Usar la misma fecha calculada
         boleta.setSubtotal(pedidoGuardado.getSubtotal());
         boleta.setIgv(pedidoGuardado.getIgv());
         boleta.setTotal(pedidoGuardado.getTotal());
         boleta.setEstado("REGISTRADA");
-        boleta.setFechaRegistro(LocalDateTime.now());
+        boleta.setFechaRegistro(LocalDateTime.now()); // El registro siempre es ahora
         boletaRepository.save(boleta);
 
-        // 6. ACTUALIZAR STOCK (solo si no faltó stock o si se fuerza)
+        // 7. ACTUALIZAR STOCK (solo si no faltó stock o si se fuerza)
         if (faltantes.isEmpty() || forzarGuardar) {
             for (DetallePedido det : pedidoData.getDetallePedidos()) {
                 productoRepository.decrementarStock(
@@ -119,42 +140,129 @@ public class PedidoServiceImpl implements PedidoService {
                 );
             }
 
-            // Flush para asegurar que los updates se ejecuten
             productoRepository.flush();
         }
 
-        // ✅ 7. OBTENER Y DEVOLVER EL DTO
+        // ✅ 8. OBTENER Y DEVOLVER EL DTO
         return pedidoRepository.findDetallePedidoMinimosById(pedidoGuardado.getId())
                 .orElseThrow(() -> new RuntimeException("Error al obtener el pedido creado"));
+    }
+
+    /**
+     * ✅ Método auxiliar para calcular la fecha según el tipo
+     */
+    private LocalDateTime calcularFechaPedido(TipoFechaPedido tipo) {
+        LocalDateTime ahora = LocalDateTime.now(PERU_ZONE); // Hora actual de Perú
+
+        return switch (tipo) {
+            case HOY -> ahora; // Mantiene fecha y hora actual
+            case MANANA -> ahora.plusDays(1);
+            case PASADO_MANANA -> ahora.plusDays(2);
+        };
+    }
+
+    @Transactional
+    @Override
+    public void actualizarOrdenPedidos(List<Map<String, Object>> ordenMap) {
+        for (Map<String, Object> item : ordenMap) {
+            Long id = ((Number) item.get("id")).longValue();
+            Integer orden = ((Number) item.get("orden")).intValue();
+
+            // Actualizar solo el campo orden
+            pedidoRepository.findById(id).ifPresent(pedido -> {
+                pedido.setOrden(orden);
+                pedidoRepository.save(pedido);
+            });
+        }
     }
 
     @Override
     public List<Pedido> findAll() {
         return pedidoRepository.findAll();
     }
-
     @Override
     public List<DetalleListaPedidoDTO> listarPedidosRegistradosHoy() {
-        // Obtener la fecha de "hoy" en zona horaria de Perú
-        LocalDate hoyPeru = LocalDate.now(PERU_ZONE);
+        return listarPedidosRegistradosPorDia(0);
+    }
 
-        // Inicio del día: 17/01/2026 00:00:00
-        LocalDateTime inicioDia = hoyPeru.atStartOfDay();
+    @Override
+    public List<DetalleListaPedidoDTO> listarPedidosRegistradosManana() {
+        return listarPedidosRegistradosPorDia(1);
+    }
 
-        // Fin del día: 18/01/2026 00:00:00 (exclusivo)
-        LocalDateTime finDia = hoyPeru.plusDays(1).atStartOfDay();
-
-        return pedidoRepository.listarPedidosRegistradosHoyConFechas(inicioDia, finDia);
+    @Override
+    public List<DetalleListaPedidoDTO> listarPedidosRegistradosPasadoManana() {
+        return listarPedidosRegistradosPorDia(2);
     }
 
     @Override
     public List<DetalleListaPedidoDTO> listarTodosPedidosHoy() {
+        return listarTodosPedidosPorDia(0);
+    }
+
+    @Override
+    public List<DetalleListaPedidoDTO> listarTodosPedidosManana() {
+        return listarTodosPedidosPorDia(1);
+    }
+
+    @Override
+    public List<DetalleListaPedidoDTO> listarTodosPedidosPasadoManana() {
+        return listarTodosPedidosPorDia(2);
+    }
+
+
+    private List<DetalleListaPedidoDTO> listarPedidosRegistradosPorDia(int diasDesdeHoy) {
+        LocalDate fecha = LocalDate.now(PERU_ZONE).plusDays(diasDesdeHoy);
+
+        LocalDateTime inicioDia = fecha.atStartOfDay();
+        LocalDateTime finDia = fecha.plusDays(1).atStartOfDay();
+
+        List<DetalleListaPedidoDTO> pedidos = pedidoRepository.listarPedidosRegistradosHoyConFechas(inicioDia, finDia);
+
+        // ✅ ORDENAR por campo 'orden' antes de devolver
+        pedidos.sort((p1, p2) -> {
+            Integer orden1 = p1.getOrden() != null ? p1.getOrden() : Integer.MAX_VALUE;
+            Integer orden2 = p2.getOrden() != null ? p2.getOrden() : Integer.MAX_VALUE;
+            return orden1.compareTo(orden2);
+        });
+
+        return pedidos;
+    }
+
+    private List<DetalleListaPedidoDTO> listarTodosPedidosPorDia(int diasDesdeHoy) {
+        LocalDate fecha = LocalDate.now(PERU_ZONE).plusDays(diasDesdeHoy);
+
+        LocalDateTime inicioDia = fecha.atStartOfDay();
+        LocalDateTime finDia = fecha.plusDays(1).atStartOfDay();
+
+        List<DetalleListaPedidoDTO> pedidos = pedidoRepository.listarTodosPedidosHoyConFechas(inicioDia, finDia);
+
+        // ✅ ORDENAR por campo 'orden' antes de devolver
+        pedidos.sort((p1, p2) -> {
+            Integer orden1 = p1.getOrden() != null ? p1.getOrden() : Integer.MAX_VALUE;
+            Integer orden2 = p2.getOrden() != null ? p2.getOrden() : Integer.MAX_VALUE;
+            return orden1.compareTo(orden2);
+        });
+
+        return pedidos;
+    }
+
+    @Override
+    public List<Pedido> obtenerTodosLosPedidosDeHoyReporteWeb() {
         LocalDate hoyPeru = LocalDate.now(PERU_ZONE);
-
         LocalDateTime inicioDia = hoyPeru.atStartOfDay();
-        LocalDateTime finDia = hoyPeru.plusDays(1).atStartOfDay();
+        LocalDateTime finDia = hoyPeru.atTime(LocalTime.MAX);
 
-        return pedidoRepository.listarTodosPedidosHoyConFechas(inicioDia, finDia);
+        return pedidoRepository.listarPedidosPorRangoFecha(inicioDia, finDia);
+    }
+
+    @Override
+    public List<Pedido> obtenerTodosLosPedidosDeMananaReporteWeb(){
+        LocalDate hoyPeru = LocalDate.now(PERU_ZONE).plusDays(1);
+        LocalDateTime inicioDia = hoyPeru.atStartOfDay();
+        LocalDateTime finDia = hoyPeru.atTime(LocalTime.MAX);
+
+        return pedidoRepository.listarPedidosPorRangoFecha(inicioDia, finDia);
     }
 
     @Override
@@ -219,7 +327,24 @@ public class PedidoServiceImpl implements PedidoService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
+        // Verificar si el pedido existe
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Pedido no encontrado con ID: " + id));
+
+        // Verificar si tiene una boleta asociada
+        Optional<Boleta> boletaAsociada = boletaRepository.findByPedidoId(id);
+
+        if (boletaAsociada.isPresent()) {
+            Boleta boleta = boletaAsociada.get();
+            throw new IllegalStateException(
+                    "No se puede eliminar el pedido #" + id + " porque tiene la boleta " +
+                            boleta.getCodigo() + " asociada. Elimine primero la boleta."
+            );
+        }
+
+        // Si no tiene boleta, eliminar normalmente
         pedidoRepository.deleteById(id);
     }
 
@@ -237,6 +362,17 @@ public class PedidoServiceImpl implements PedidoService {
     public List<ReporteProductoDTO> reporteProductosRegistrados() {
         return pedidoRepository.reporteProductosRegistrados();
     }
+
+    @Override
+    public List<ReporteProductoDTO> reporteProductosRegistradosManana() {
+        LocalDate manana = LocalDate.now(PERU_ZONE).plusDays(1);
+
+        LocalDateTime inicioDia = manana.atStartOfDay();
+        LocalDateTime finDia = manana.plusDays(1).atStartOfDay();
+
+        return pedidoRepository.reporteProductosRegistradosConFechas(inicioDia, finDia);
+    }
+
     @Override
     public Optional<Pedido> obtenerPorId(Long id) {
         return pedidoRepository.findById(id);

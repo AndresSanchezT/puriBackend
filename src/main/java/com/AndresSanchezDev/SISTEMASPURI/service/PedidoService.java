@@ -2,22 +2,31 @@ package com.AndresSanchezDev.SISTEMASPURI.service;
 
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.*;
 import com.AndresSanchezDev.SISTEMASPURI.entity.Pedido;
-import org.springframework.data.repository.query.Param;
+import com.AndresSanchezDev.SISTEMASPURI.entity.TipoFechaPedido;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface PedidoService {
-    DetalleListaPedidoDTO registrarPedidoConVisitaYDetalles(Long idCliente, Long idVendedor, Pedido pedidoData, boolean forzarGuardar);
+    DetalleListaPedidoDTO registrarPedidoConVisitaYDetalles(Long idCliente, Long idVendedor, Pedido pedidoData, boolean forzarGuardar, TipoFechaPedido tipoFecha);
 
     List<Pedido> findAll();
 
     List<DetalleListaPedidoDTO> listarTodosPedidosHoy();
 
     List<DetalleListaPedidoDTO> listarPedidosRegistradosHoy();
+    List<DetalleListaPedidoDTO> listarTodosPedidosManana();
+    List<DetalleListaPedidoDTO> listarPedidosRegistradosManana();
+    List<DetalleListaPedidoDTO> listarTodosPedidosPasadoManana();
+    List<DetalleListaPedidoDTO> listarPedidosRegistradosPasadoManana();
+
+    List<Pedido> obtenerTodosLosPedidosDeHoyReporteWeb();
+    List<Pedido> obtenerTodosLosPedidosDeMananaReporteWeb();
+
 
     Optional<Pedido> findById(Long id);
-
+    boolean verificarPedidoExistente(Long idCliente, String tipoFecha);
     Optional<Pedido> obtenerPorId(Long id);
 
     Pedido save(Pedido pedido);
@@ -31,11 +40,13 @@ public interface PedidoService {
     long countPedidosTotales();
 
     List<ReporteProductoDTO> reporteProductosRegistrados();
+    List<ReporteProductoDTO> reporteProductosRegistradosManana();
 
     List<ItemPedidoDTO> validarStock(List<ItemPedidoDTO> items);
 
     Optional<PedidoResponseDTO.PedidoDTO> obtenerPedidoCompleto(Long idPedido);
 
+    void actualizarOrdenPedidos(List<Map<String, Object>> ordenMap);
     //FUNCIONES PARA CAMBIAR ESTADOS DEL PEDIDO:
 
     void cambiarEstado(Long pedidoId, CambiarEstadoPedidoDTO dto);

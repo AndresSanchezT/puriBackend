@@ -46,6 +46,5 @@ public interface BoletaRepository extends JpaRepository<Boleta, Long> {
             "WHERE b.id IN :ids")
     List<Boleta> findBoletasCompletasByIds(@Param("ids") List<Long> ids);
 
-
     Optional<Boleta> findByPedidoId(Long pedidoId);
 }

@@ -13,6 +13,7 @@ public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Integer orden = 0;
     @ManyToOne
     @JoinColumn(name = "id_vendedor")
     private Usuario vendedor;
@@ -38,8 +39,9 @@ public class Pedido {
 
     public Pedido() {}
 
-    public Pedido(Long id, Usuario vendedor, Cliente cliente, Long idRepartidor, Visita visita, LocalDateTime fechaPedido, LocalDateTime fechaEntrega, Double subtotal, Double igv, Double total, String estado, String observaciones, List<DetallePedido> detallePedidos, Double yape, Double plin, Double credito, Double efectivo) {
+    public Pedido(Long id,Integer orden, Usuario vendedor, Cliente cliente, Long idRepartidor, Visita visita, LocalDateTime fechaPedido, LocalDateTime fechaEntrega, Double subtotal, Double igv, Double total, String estado, String observaciones, List<DetallePedido> detallePedidos, Double yape, Double plin, Double credito, Double efectivo) {
         this.id = id;
+        this.orden = orden;
         this.vendedor = vendedor;
         this.cliente = cliente;
         this.idRepartidor = idRepartidor;
@@ -64,6 +66,14 @@ public class Pedido {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getOrden() {
+        return orden;
+    }
+
+    public void setOrden(Integer orden) {
+        this.orden = orden;
     }
 
     public Usuario getVendedor() {

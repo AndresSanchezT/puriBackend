@@ -20,6 +20,8 @@ public interface BoletaService {
 
     void deleteById(Long id);
 
+    Boleta findByPedidoId(Long pedidoId);
+
     String actualizarEstado(Long id, ActualizarEstadoBoletaDTO dto);
 
     //    byte[] generarBoleta(Long boletaId) throws JRException;

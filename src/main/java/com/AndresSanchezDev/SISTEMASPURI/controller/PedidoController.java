@@ -1,12 +1,17 @@
 package com.AndresSanchezDev.SISTEMASPURI.controller;
 
+import com.AndresSanchezDev.SISTEMASPURI.entity.Boleta;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.*;
 
 import com.AndresSanchezDev.SISTEMASPURI.entity.Pedido;
 
 import com.AndresSanchezDev.SISTEMASPURI.entity.ProductoFaltante;
+import com.AndresSanchezDev.SISTEMASPURI.entity.TipoFechaPedido;
+import com.AndresSanchezDev.SISTEMASPURI.service.BoletaService;
 import com.AndresSanchezDev.SISTEMASPURI.service.PedidoService;
 import com.AndresSanchezDev.SISTEMASPURI.service.ProductoService;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,15 +28,28 @@ public class PedidoController {
 
     private final PedidoService pedidoService;
     private final ProductoService productoService;
+    private final BoletaService boletaService;
 
-    public PedidoController(PedidoService service, ProductoService productoService) {
+    public PedidoController(PedidoService service, ProductoService productoService, BoletaService boletaService) {
         this.pedidoService = service;
         this.productoService = productoService;
+        this.boletaService = boletaService;
     }
 
     @GetMapping
     public List<Pedido> getAll() {
         return pedidoService.findAll();
+    }
+
+    @GetMapping("/reporte/hoy")
+    public ResponseEntity<List<Pedido>> obtenerReportePedidosHoy() {
+        List<Pedido> pedidos = pedidoService.obtenerTodosLosPedidosDeHoyReporteWeb();
+        return ResponseEntity.ok(pedidos);
+    }
+    @GetMapping("/reporte/manana")
+    public ResponseEntity<List<Pedido>> obtenerReportePedidosManana() {
+        List<Pedido> pedidos = pedidoService.obtenerTodosLosPedidosDeMananaReporteWeb();
+        return ResponseEntity.ok(pedidos);
     }
 
     @GetMapping("/all-mobile")
@@ -41,6 +59,27 @@ public class PedidoController {
     @GetMapping("/all-mobile-admin")
     public List<DetalleListaPedidoDTO> listarTodosPedidosHoy() {
         return pedidoService.listarTodosPedidosHoy();
+    }
+
+    @GetMapping("/all-mobile/manana")
+    public List<DetalleListaPedidoDTO> listarPedidosRegistradosManana() {
+        return pedidoService.listarPedidosRegistradosManana();
+    }
+
+    @GetMapping("/all-mobile-admin/manana")
+    public List<DetalleListaPedidoDTO> listarTodosPedidosManana() {
+        return pedidoService.listarTodosPedidosManana();
+    }
+
+    // ✅ Nuevos endpoints para PASADO MAÑANA
+    @GetMapping("/all-mobile/pasado-manana")
+    public List<DetalleListaPedidoDTO> listarPedidosRegistradosPasadoManana() {
+        return pedidoService.listarPedidosRegistradosPasadoManana();
+    }
+
+    @GetMapping("/all-mobile-admin/pasado-manana")
+    public List<DetalleListaPedidoDTO> listarTodosPedidosPasadoManana() {
+        return pedidoService.listarTodosPedidosPasadoManana();
     }
 
     @GetMapping("/{id}")
@@ -68,6 +107,11 @@ public class PedidoController {
         return pedidoService.reporteProductosRegistrados();
     }
 
+    @GetMapping("/productos-registrados/manana")
+    public List<ReporteProductoDTO> reporteProductosManana() {
+        return pedidoService.reporteProductosRegistradosManana();
+    }
+
     @GetMapping("/faltantes")
     public List<ProductoFaltante> listarFaltantes() {
         return productoService.listarFaltantes();
@@ -78,15 +122,30 @@ public class PedidoController {
         return pedidoService.save(pedido);
     }
 
+    @GetMapping("/verificar/{id}")
+    public ResponseEntity<Boolean> verificarPedidoExistente(
+            @PathVariable Long id,
+            @RequestParam String tipoFecha
+    ) {
+        try {
+            boolean existe = pedidoService.verificarPedidoExistente(id, tipoFecha);
+            return ResponseEntity.ok(existe);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(false);
+        }
+    }
+
     @PostMapping("/registrar/{idCliente}/{idVendedor}")
     public ResponseEntity<DetalleListaPedidoDTO> registrarPedido(
             @PathVariable Long idCliente,
             @PathVariable Long idVendedor,
             @RequestParam(defaultValue = "false") boolean forzar,
+            @RequestParam(defaultValue = "HOY") TipoFechaPedido tipoFecha, // ✅ Nuevo parámetro
             @RequestBody Pedido pedidoData) {
 
         DetalleListaPedidoDTO pedido = pedidoService.registrarPedidoConVisitaYDetalles(
-                idCliente, idVendedor, pedidoData, forzar);
+                idCliente, idVendedor, pedidoData, forzar, tipoFecha); // ✅ Pasar tipoFecha
 
         return ResponseEntity.ok(pedido);
     }
@@ -103,8 +162,95 @@ public class PedidoController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        pedidoService.deleteById(id);
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        try {
+            pedidoService.deleteById(id);
+            return ResponseEntity.ok()
+                    .body(Map.of("mensaje", "Pedido eliminado exitosamente"));
+
+        } catch (IllegalStateException e) {
+            // Error: tiene boleta asociada
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of(
+                            "mensaje", e.getMessage(),
+                            "codigo", "PEDIDO_TIENE_BOLETA"
+                    ));
+
+        } catch (EntityNotFoundException e) {
+            // Error: pedido no existe
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of(
+                            "mensaje", e.getMessage(),
+                            "codigo", "PEDIDO_NO_ENCONTRADO"
+                    ));
+
+        } catch (Exception e) {
+            // Error genérico
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "mensaje", "Error al eliminar el pedido",
+                            "codigo", "ERROR_INTERNO"
+                    ));
+        }
+    }
+
+    @PutMapping("/actualizar-orden")
+    public ResponseEntity<Void> actualizarOrdenPedidos(@RequestBody List<OrdenPedidoRequest> ordenRequests) {
+        try {
+            for (OrdenPedidoRequest request : ordenRequests) {
+                Long id = request.getId();
+                Integer orden = request.getOrden();
+
+                Optional<Pedido> pedidoOpt = pedidoService.obtenerPorId(id);
+
+                if (pedidoOpt.isPresent()) {
+                    Pedido pedido = pedidoOpt.get();
+                    pedido.setOrden(orden);
+                    pedidoService.save(pedido);
+                }
+            }
+
+            return ResponseEntity.ok().build();
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @DeleteMapping("/mobil/{id}")
+    public ResponseEntity<?> deleteMobil(@PathVariable Long id) {
+        try {
+            // 1. Buscar si existe una boleta asociada a este pedido
+            Boleta boleta = boletaService.findByPedidoId(id);
+            if (boleta != null) {
+                boletaService.deleteById(boleta.getId());
+            }
+
+            // 2. Ahora eliminar el pedido
+            pedidoService.deleteById(id);
+
+            return ResponseEntity.ok()
+                    .body(Map.of("mensaje", "Pedido eliminado exitosamente"));
+
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of(
+                            "mensaje", e.getMessage(),
+                            "codigo", "PEDIDO_TIENE_BOLETA"
+                    ));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of(
+                            "mensaje", e.getMessage(),
+                            "codigo", "PEDIDO_NO_ENCONTRADO"
+                    ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "mensaje", "Error al eliminar el pedido",
+                            "codigo", "ERROR_INTERNO"
+                    ));
+        }
     }
 
     @DeleteMapping("/resetear-faltantes")

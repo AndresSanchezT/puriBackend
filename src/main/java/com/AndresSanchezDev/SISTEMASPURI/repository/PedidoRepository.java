@@ -62,6 +62,52 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 """, nativeQuery = true)
     List<ReporteProductoDTO> reporteProductosRegistrados();
 
+    @Query("""
+    SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END
+    FROM Pedido p
+    WHERE p.cliente.id = :idCliente
+    AND p.estado = 'registrado'
+    AND p.fechaPedido >= :inicioDia
+    AND p.fechaPedido < :finDia
+""")
+    boolean existePedidoRegistrado(
+            @Param("idCliente") Long idCliente,
+            @Param("inicioDia") LocalDateTime inicioDia,
+            @Param("finDia") LocalDateTime finDia
+    );
+
+    // ✅  Query para productos con filtro de fecha
+    @Query(value = """
+    SELECT 
+        pr.nombre AS nombreProducto,
+        COALESCE(SUM(dp.cantidad), 0) AS totalProductos,
+        pr.stock_actual AS stockActual,
+        pr.stock_minimo AS stockMinimo,
+        CASE 
+            WHEN pr.stock_actual <= 0 THEN 'AGOTADO'
+            WHEN pr.stock_actual < pr.stock_minimo THEN 'BAJO STOCK'
+            ELSE 'OK'
+        END AS estado,
+        pr.unidad_medida AS unidadMedida,
+        CASE 
+            WHEN pr.unidad_medida IN ('KGR') 
+            THEN GROUP_CONCAT(dp.cantidad ORDER BY p.id SEPARATOR ',')
+            ELSE NULL
+        END AS cantidadesPorPedido
+    FROM pedido p
+    INNER JOIN detalle_pedido dp ON p.id = dp.id_pedido
+    INNER JOIN producto pr ON dp.id_producto = pr.id
+    WHERE p.estado = 'registrado'
+    AND p.fecha_pedido >= :inicioDia
+    AND p.fecha_pedido < :finDia
+    GROUP BY pr.id, pr.nombre, pr.stock_actual, pr.stock_minimo, pr.unidad_medida
+    ORDER BY pr.nombre ASC
+""", nativeQuery = true)
+    List<ReporteProductoDTO> reporteProductosRegistradosConFechas(
+            @Param("inicioDia") LocalDateTime inicioDia,
+            @Param("finDia") LocalDateTime finDia
+    );
+
     // 🔥 NUEVO: Query que acepta rango de fechas (00:00 - 23:59 hora Perú)
     @Query("""
     SELECT 
@@ -70,15 +116,28 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
         c.direccion AS direccion,
         p.estado AS estado,
         c.tieneCredito AS tieneCredito,
-        p.total AS total
+        p.total AS total,
+         p.orden
     FROM Pedido p 
     JOIN p.cliente c
     WHERE p.estado = 'registrado'
     AND p.fechaPedido >= :inicioDia
     AND p.fechaPedido < :finDia
-    ORDER BY p.fechaPedido DESC
+     ORDER BY p.orden ASC
 """)
     List<DetalleListaPedidoDTO> listarPedidosRegistradosHoyConFechas(
+            @Param("inicioDia") LocalDateTime inicioDia,
+            @Param("finDia") LocalDateTime finDia
+    );
+
+    @Query("""
+        SELECT p 
+        FROM Pedido p 
+        WHERE p.fechaPedido >= :inicioDia
+        AND p.fechaPedido < :finDia
+        ORDER BY p.fechaPedido DESC
+    """)
+    List<Pedido> listarPedidosPorRangoFecha(
             @Param("inicioDia") LocalDateTime inicioDia,
             @Param("finDia") LocalDateTime finDia
     );
@@ -91,12 +150,13 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
         c.direccion AS direccion,
         p.estado AS estado,
         c.tieneCredito AS tieneCredito,
-        p.total AS total
+        p.total AS total,
+        p.orden
     FROM Pedido p 
     JOIN p.cliente c
     WHERE p.fechaPedido >= :inicioDia
     AND p.fechaPedido < :finDia
-    ORDER BY p.fechaPedido DESC
+    ORDER BY p.orden ASC
 """)
     List<DetalleListaPedidoDTO> listarTodosPedidosHoyConFechas(
             @Param("inicioDia") LocalDateTime inicioDia,

@@ -27,14 +27,14 @@ public class DataLoader implements CommandLineRunner {
         System.out.println("🔧 =========================================");
 
         // Crear ADMIN
-        if (usuarioRepository.findByUsuario("admin123").isEmpty()) {
+        if (usuarioRepository.findByUsuario("puri").isEmpty()) {
             crearUsuarioAdmin();
         } else {
             System.out.println("⏭️  Usuario admin ya existe, omitiendo...");
         }
 
         // Crear VENDEDOR
-        if (usuarioRepository.findByUsuario("Alocate").isEmpty()) {
+        if (usuarioRepository.findByUsuario("Alocatee").isEmpty()) {
             crearUsuarioVendedor();
         } else {
             System.out.println("⏭️  Usuario vendedor ya existe, omitiendo...");
@@ -60,14 +60,14 @@ public class DataLoader implements CommandLineRunner {
             admin.setCorreo("jyr@hotmai.com");
             admin.setRol(Rol.ADMINISTRADOR);
             admin.setTelefono("987437118");
-            admin.setUsuario("admin123");
-            admin.setContrasena(passwordEncoder.encode("ocote123"));
+            admin.setUsuario("puri");
+            admin.setContrasena(passwordEncoder.encode("puri123"));
             // Guardar
             usuarioRepository.save(admin);
 
             System.out.println("✅ ADMIN CREADO:");
-            System.out.println("   👤 Usuario: admin123");
-            System.out.println("   🔑 Password: ocote123");
+            System.out.println("   👤 Usuario: puri");
+            System.out.println("   🔑 Password: puri123");
             System.out.println("   📋 Permisos: Acceso total al sistema");
 
         } catch (Exception e) {
@@ -80,15 +80,15 @@ public class DataLoader implements CommandLineRunner {
         try {
             // 1. Crear Usuario
             Usuario vendedor = new Usuario();
-            vendedor.setNombre("Cristian Rodriguez Trujillo");
+            vendedor.setNombre("Cristian");
             vendedor.setCorreo("crt@hotmail.com");
             vendedor.setRol(Rol.VENDEDOR);
-            vendedor.setUsuario("Alocate");
+            vendedor.setUsuario("Alocatee");
             vendedor.setTelefono("123456789");
             vendedor.setContrasena(passwordEncoder.encode("alocatee123"));
 
             Usuario vendedor2 = new Usuario();
-            vendedor2.setNombre("Wilmer Miller Lopez Taipehuaman");
+            vendedor2.setNombre("Wilmer");
             vendedor2.setCorreo("wilmerBebita@hotmail.com");
             vendedor2.setRol(Rol.VENDEDOR);
             vendedor2.setUsuario("WilmerMapero");
@@ -96,20 +96,29 @@ public class DataLoader implements CommandLineRunner {
             vendedor2.setContrasena(passwordEncoder.encode("luna123"));
 
             Usuario vendedor3 = new Usuario();
-            vendedor3.setNombre("Alfredo La Beba de Puri");
+            vendedor3.setNombre("Alfredo");
             vendedor3.setCorreo("wilmerBebita@hotmail.com");
             vendedor3.setRol(Rol.VENDEDOR);
-            vendedor3.setUsuario("AlfredoLokita");
+            vendedor3.setUsuario("labeba");
             vendedor3.setTelefono("123456789");
-            vendedor3.setContrasena(passwordEncoder.encode("tubebe123"));
+            vendedor3.setContrasena(passwordEncoder.encode("bebe123"));
+
+            Usuario vendedor4 = new Usuario();
+            vendedor3.setNombre("Victor");
+            vendedor3.setCorreo("v@gmail.com");
+            vendedor3.setRol(Rol.VENDEDOR);
+            vendedor3.setUsuario("victor123");
+            vendedor3.setTelefono("123456789");
+            vendedor3.setContrasena(passwordEncoder.encode("palomino"));
             // Guardar
             usuarioRepository.save(vendedor);
             usuarioRepository.save(vendedor2);
             usuarioRepository.save(vendedor3);
+            usuarioRepository.save(vendedor4);
 
             System.out.println("✅ VENDEDORES CREADO:");
-            System.out.println("   👤 Usuarios: Alocatee,WilmerMapero,AlfredoLokita");
-            System.out.println("   🔑 Password: alocatee123");
+            System.out.println("   👤 Usuarios: Alocatee,WilmerMapero,labeba,victor123");
+            System.out.println("   🔑 Password: alocatee123,luna123,bebe123,palomino");
             System.out.println("   📋 Permisos: Accesos Limitados");
 
         } catch (Exception e) {

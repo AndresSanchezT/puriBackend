@@ -66,6 +66,11 @@ public class BoletaServiceImpl implements BoletaService {
     }
 
     @Override
+    public Boleta findByPedidoId(Long pedidoId) {
+        return repository.findByPedidoId(pedidoId).orElse(null);
+    }
+
+    @Override
     public String actualizarEstado(Long id, ActualizarEstadoBoletaDTO dto) {
         Boleta boleta = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Boleta no encontrada"));
@@ -107,8 +112,8 @@ public class BoletaServiceImpl implements BoletaService {
     @Override
     public List<Boleta> obtenerBoletasDeHoyPorEstadoPedido() {
         LocalDate hoyPeru = LocalDate.now(PERU_ZONE);
-        LocalDateTime inicioDia = hoyPeru.atStartOfDay();
-        LocalDateTime finDia = hoyPeru.plusDays(1).atStartOfDay();
+        LocalDateTime inicioDia = hoyPeru.plusDays(1).atStartOfDay();
+        LocalDateTime finDia = hoyPeru.plusDays(2).atStartOfDay();
 
         // Paso 1: Obtener IDs únicos
         List<Long> ids = repository.findBoletaIdsPorRangoFechaPedidoRegistrado(
