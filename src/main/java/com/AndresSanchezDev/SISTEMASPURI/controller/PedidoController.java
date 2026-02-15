@@ -111,6 +111,10 @@ public class PedidoController {
     public List<ReporteProductoDTO> reporteProductosManana() {
         return pedidoService.reporteProductosRegistradosManana();
     }
+    @GetMapping("/productos-registrados/hoy")
+    public List<ReporteProductoDTO> reporteProductosHoy() {
+        return pedidoService.reporteProductosRegistradosHoy();
+    }
 
     @GetMapping("/faltantes")
     public List<ProductoFaltante> listarFaltantes() {
@@ -214,6 +218,16 @@ public class PedidoController {
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    @DeleteMapping("/antiguos")
+    public ResponseEntity<?> eliminarPedidosAntiguos() {
+        try {
+            Map<String, Object> resultado = pedidoService.eliminarPedidosAntiguos();
+            return ResponseEntity.ok(resultado);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 

@@ -4,14 +4,12 @@ import com.AndresSanchezDev.SISTEMASPURI.entity.*;
 import com.AndresSanchezDev.SISTEMASPURI.entity.DTO.*;
 import com.AndresSanchezDev.SISTEMASPURI.repository.*;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class PedidoServiceImpl implements PedidoService {
     @Autowired
     private PedidoRepository pedidoRepository;
@@ -362,6 +361,15 @@ public class PedidoServiceImpl implements PedidoService {
     public List<ReporteProductoDTO> reporteProductosRegistrados() {
         return pedidoRepository.reporteProductosRegistrados();
     }
+    @Override
+    public List<ReporteProductoDTO> reporteProductosRegistradosHoy() {
+        LocalDate hoy = LocalDate.now(PERU_ZONE);
+
+        LocalDateTime inicioDia = hoy.atStartOfDay();
+        LocalDateTime finDia = hoy.plusDays(1).atStartOfDay();
+
+        return pedidoRepository.reporteProductosRegistradosConFechas(inicioDia, finDia);
+    }
 
     @Override
     public List<ReporteProductoDTO> reporteProductosRegistradosManana() {
@@ -533,6 +541,45 @@ public class PedidoServiceImpl implements PedidoService {
                 );
             }
         }
+    }
+
+    @Transactional
+    public Map<String, Object> eliminarPedidosAntiguos() {
+        ZonedDateTime ahora = ZonedDateTime.now(ZoneId.of("America/Lima"));
+        LocalDateTime inicioHoy = ahora.toLocalDate().atStartOfDay();
+
+        // 1️⃣ Obtener los pedidos a eliminar
+        List<Pedido> pedidosAEliminar = pedidoRepository.listarPedidosAnterioresAHoy(inicioHoy);
+
+        if (pedidosAEliminar.isEmpty()) {
+            return Map.of(
+                    "mensaje", "No hay pedidos antiguos para eliminar",
+                    "eliminados", 0
+            );
+        }
+
+        int eliminados = 0;
+
+        // 2️⃣ Eliminar cada pedido (JPA se encarga del cascade)
+        for (Pedido pedido : pedidosAEliminar) {
+            try {
+                // ✅ Primero eliminar la boleta si existe
+                boletaRepository.deleteByPedidoId(pedido.getId());
+
+                // ✅ Luego eliminar el pedido (DetallePedido se eliminará por cascade)
+                pedidoRepository.delete(pedido);
+                eliminados++;
+
+            } catch (Exception e) {
+                log.error("Error al eliminar pedido {}: {}", pedido.getId(), e.getMessage());
+            }
+        }
+
+        return Map.of(
+                "mensaje", "Pedidos antiguos eliminados exitosamente",
+                "eliminados", eliminados,
+                "fechaLimite", inicioHoy
+        );
     }
 
     /**

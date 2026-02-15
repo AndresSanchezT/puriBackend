@@ -12,7 +12,7 @@ public interface PedidoService {
     DetalleListaPedidoDTO registrarPedidoConVisitaYDetalles(Long idCliente, Long idVendedor, Pedido pedidoData, boolean forzarGuardar, TipoFechaPedido tipoFecha);
 
     List<Pedido> findAll();
-
+    Map<String, Object> eliminarPedidosAntiguos();
     List<DetalleListaPedidoDTO> listarTodosPedidosHoy();
 
     List<DetalleListaPedidoDTO> listarPedidosRegistradosHoy();
@@ -40,6 +40,7 @@ public interface PedidoService {
     long countPedidosTotales();
 
     List<ReporteProductoDTO> reporteProductosRegistrados();
+    List<ReporteProductoDTO> reporteProductosRegistradosHoy();
     List<ReporteProductoDTO> reporteProductosRegistradosManana();
 
     List<ItemPedidoDTO> validarStock(List<ItemPedidoDTO> items);

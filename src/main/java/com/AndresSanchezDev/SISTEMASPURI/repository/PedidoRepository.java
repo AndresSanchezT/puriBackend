@@ -142,6 +142,14 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
             @Param("finDia") LocalDateTime finDia
     );
 
+    @Query("""
+    SELECT p 
+    FROM Pedido p 
+    WHERE p.fechaPedido < :inicioHoy
+    ORDER BY p.fechaPedido DESC
+""")
+    List<Pedido> listarPedidosAnterioresAHoy(@Param("inicioHoy") LocalDateTime inicioHoy);
+
     // 🔥 NUEVO: Query para admin que acepta rango de fechas
     @Query("""
     SELECT 
@@ -207,4 +215,12 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
     @Query("SELECT p.estado FROM Pedido p WHERE p.id = :id")
     String obtenerEstadoPedido(@Param("id") Long id);
+
+
+    @Modifying
+    @Query("""
+    DELETE FROM Pedido p 
+    WHERE p.fechaPedido < :inicioHoy
+""")
+    int eliminarPedidosAnterioresAHoy(@Param("inicioHoy") LocalDateTime inicioHoy);
 }
